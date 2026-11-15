@@ -1,0 +1,17 @@
+# never copy into the build context
+node_modules
+.next
+.git
+.env
+.env.local
+.env*.local
+
+# logs & OS
+*.log
+.DS_Store
+Thumbs.db
+
+# project docs not needed at runtime (copies live in /public)
+*.docx
+coinlab logo.jpg
+organogram.jpg
