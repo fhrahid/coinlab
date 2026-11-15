@@ -92,3 +92,26 @@
 .settings-card .button{width:100%;justify-content:center;margin-top:2px}
 .settings-note{font-size:10px;color:var(--muted);line-height:1.7;margin-top:8px}
 .settings-link{color:var(--blue);font-size:11px;text-decoration:underline;text-underline-offset:3px}
+
+.people-hierarchy{display:flex;flex-direction:column;gap:46px}
+.people-tier{animation:none}
+.tier-head{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:24px}
+.tier-index{font:800 11px var(--mono);color:var(--blue);letter-spacing:.1em}
+.tier-title{font:800 24px var(--sans);letter-spacing:-.03em;margin:0}
+.tier-count{font:9px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-left:auto}
+.tier-row{display:flex;flex-wrap:wrap;gap:30px 34px}
+.person-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;width:184px;transition:transform .18s ease}
+.person-card:hover{transform:translateY(-5px)}
+.person-photo{border-radius:50%;background:var(--navy);color:white;border:3px solid var(--navy);box-shadow:9px 9px 0 var(--cyan);display:flex;align-items:center;justify-content:center;overflow:hidden;font:800 26px var(--sans);letter-spacing:-.03em}
+.person-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.person-meta strong{display:block;font:700 14px var(--sans);letter-spacing:-.01em}
+.person-meta span{display:block;font:9px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:5px}
+.tier-leadership .person-photo{width:176px;height:176px;font-size:34px}
+.tier-leadership .person-card{width:200px}
+.tier-heads .person-photo{width:150px;height:150px;font-size:28px}
+.tier-heads .person-card{width:172px}
+.tier-researchers .person-photo{width:130px;height:130px;font-size:24px}
+.tier-researchers .person-card{width:152px}
+.tier-students .person-photo{width:112px;height:112px;font-size:20px}
+.tier-students .person-card{width:136px}
+@media(max-width:640px){.people-hierarchy{gap:34px}.tier-row{gap:22px}.tier-leadership .person-photo{width:150px;height:150px;font-size:28px}.tier-leadership .person-card{width:100%;max-width:170px}.tier-heads .person-photo{width:128px;height:128px}.tier-heads .person-card{width:100%;max-width:146px}.tier-researchers .person-photo{width:114px;height:114px}.tier-researchers .person-card{width:100%;max-width:132px}.tier-students .person-photo{width:100px;height:100px}.tier-students .person-card{width:100%;max-width:118px}.person-photo{box-shadow:6px 6px 0 var(--cyan)}}
