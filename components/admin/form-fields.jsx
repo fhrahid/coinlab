@@ -120,7 +120,7 @@ export function WingPicker({ wings, value = [], onChange }) {
         <div className="flex flex-wrap gap-2">
           {wings.map((wing) => (
             <label
-              className="flex min-h-10 cursor-pointer items-center gap-2 border bg-card px-3 text-xs font-semibold has-data-checked:border-brand/50 has-data-checked:bg-accent has-focus-visible:border-ring"
+              className="flex min-h-10 cursor-pointer items-center gap-2 rounded-full border bg-card px-3 text-xs font-semibold has-data-checked:border-brand/50 has-data-checked:bg-accent has-focus-visible:border-ring"
               key={wing.slug}
             >
               <Checkbox
@@ -225,11 +225,11 @@ export function BioEditor({
         value={value}
       />
       {value && (
-        <div className="border border-dashed bg-card p-3.5">
+        <div className="rounded-2xl border border-dashed bg-card p-3.5">
           <span className="label-caps mb-2 block text-[0.5625rem] text-muted-foreground">
             Bio preview
           </span>
-          <RichText className="text-[13px] text-ink-soft" text={value} />
+          <RichText className="text-[13px] text-muted-foreground" text={value} />
         </div>
       )}
     </Field>
@@ -246,7 +246,7 @@ export function CitationParser({ onParsed }) {
     onParsed(parsed);
   };
   return (
-    <div className="flex flex-col gap-3 border bg-card p-4 sm:col-span-2">
+    <div className="flex flex-col gap-3 rounded-2xl border bg-card p-4 sm:col-span-2">
       <label
         className="flex items-center gap-2 text-xs font-bold"
         htmlFor="field-citation"

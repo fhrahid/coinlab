@@ -1,16 +1,17 @@
-import { Eyebrow } from "@/components/site/typography";
+import { SectionHeader } from "@/components/site/typography";
 
-// Title block shared by the listing pages (wings, people, papers).
-export default function PageHero({ eyebrow, title, children }) {
+// Title block shared by every inner page. `children` is the lead paragraph;
+// `before` renders above the chip (breadcrumbs) and `after` below the lead.
+export default function PageHero({ chip, title, children, before, after }) {
   return (
-    <div className="wrap pt-12 pb-9 md:pt-20 md:pb-14">
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h1 className="display-heading mt-4 mb-5">{title}</h1>
-      {children && (
-        <p className="max-w-[520px] text-sm leading-[1.8] text-muted-foreground">
-          {children}
-        </p>
-      )}
+    <div className="relative isolate overflow-hidden border-b">
+      <div aria-hidden="true" className="absolute inset-0 -z-10 dot-grid mask-[linear-gradient(to_bottom,black,transparent)] opacity-70" />
+      <div aria-hidden="true" className="absolute -top-40 left-1/2 -z-10 h-80 w-[min(90vw,900px)] -translate-x-1/2 rounded-full bg-brand/15 blur-[100px]" />
+      <div className="wrap flex flex-col gap-6 pt-32 pb-12 md:pt-40 md:pb-16">
+        {before}
+        <SectionHeader as="h1" chip={chip} className="animate-fade-up" title={title}>{children}</SectionHeader>
+        {after}
+      </div>
     </div>
   );
 }

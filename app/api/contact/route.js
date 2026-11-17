@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
-import { badRequest, readJson } from "@/lib/http";
+import { badRequest, limited, readJson } from "@/lib/http";
 
 // Public contact endpoint. The hidden "website" field is a honeypot — bots
 // fill it, humans never see it; their submissions are silently dropped.
@@ -13,6 +13,8 @@ export async function POST(request) {
       },
       { status: 503 },
     );
+  const blocked = limited(request, "contact", { limit: 5, windowMs: 10 * 60_000 });
+  if (blocked) return blocked;
   const body = await readJson(request);
   if (!body) return badRequest();
   const { name, email, subject, message, website } = body;

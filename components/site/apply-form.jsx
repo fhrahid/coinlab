@@ -41,7 +41,7 @@ export default function ApplyForm({ jobSlug }) {
 
   if (status === "sent")
     return (
-      <div className="mt-5 flex items-start gap-3 rounded-lg border bg-accent p-5">
+      <div className="flex items-start gap-3 rounded-2xl border bg-accent p-5">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background text-brand">
           <Check size={20} />
         </span>
@@ -57,7 +57,7 @@ export default function ApplyForm({ jobSlug }) {
 
   return (
     <form
-      className="mt-5 flex max-w-xl flex-col gap-3.5 rounded-lg border p-5"
+      className="flex flex-col gap-3.5"
       onSubmit={submit}
     >
       <div className="grid gap-3.5 sm:grid-cols-2">
@@ -124,7 +124,7 @@ export default function ApplyForm({ jobSlug }) {
         value={form.website}
       />
       {error && <p className="text-xs text-destructive">{error}</p>}
-      <Button disabled={status === "sending"} size="xl" type="submit">
+      <Button disabled={status === "sending"} size="xl" type="submit" variant="glow">
         {status === "sending" ? (
           "Sending…"
         ) : (

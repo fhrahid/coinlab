@@ -23,7 +23,7 @@ export default function AdminPage() {
 
   if (session === "checking") {
     return (
-      <main className="flex min-h-svh items-center justify-center bg-navy text-sky">
+      <main className="flex min-h-svh items-center justify-center bg-navy text-brand-2">
         <Spinner className="size-6" />
         <span className="sr-only">Loading the CMS…</span>
       </main>

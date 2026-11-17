@@ -6,7 +6,7 @@ import {
   setPassword,
   verifyPassword,
 } from "@/lib/admin";
-import { badRequest, readJson, unauthorized } from "@/lib/http";
+import { badRequest, limited, readJson, unauthorized } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +17,12 @@ export async function GET(request) {
   if (process.env.MONGODB_URI) {
     try {
       const db = await getDb();
-      for (const name of ["wings", "people", "papers", "partners", "slides"])
-        counts[name] = await db.collection(name).countDocuments();
+      // Counted in parallel from collection metadata, not by scanning.
+      const names = ["wings", "people", "papers", "partners", "slides", "jobs"];
+      const totals = await Promise.all(
+        names.map((name) => db.collection(name).estimatedDocumentCount()),
+      );
+      names.forEach((name, index) => (counts[name] = totals[index]));
       mongo = true;
     } catch {
       mongo = false;
@@ -66,6 +70,8 @@ export async function POST(request) {
       { error: "Connect MongoDB before changing the CMS password." },
       { status: 503 },
     );
+  const blocked = limited(request, "password", { limit: 5, windowMs: 15 * 60_000 });
+  if (blocked) return blocked;
   const body = await readJson(request);
   if (!body) return badRequest();
   const { currentPassword, newPassword } = body;

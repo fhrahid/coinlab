@@ -54,7 +54,7 @@ export default function SlideEditor({ form, update, upload }) {
         {upload.preview && (
           <img
             alt="Preview of the selected file"
-            className="max-h-64 w-full border object-contain"
+            className="max-h-64 w-full rounded-2xl border object-contain"
             src={upload.preview}
           />
         )}
@@ -65,7 +65,7 @@ export default function SlideEditor({ form, update, upload }) {
 
   return (
     <div className="flex flex-col gap-5 sm:col-span-2">
-      <div className="relative aspect-16/11 w-full overflow-hidden border bg-muted">
+      <div className="relative aspect-16/11 w-full overflow-hidden rounded-2xl border bg-muted">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -141,7 +141,7 @@ export default function SlideEditor({ form, update, upload }) {
           value={form.number}
         />
       </div>
-      <Field className="border bg-card p-3.5" orientation="horizontal">
+      <Field className="rounded-2xl border bg-card p-3.5" orientation="horizontal">
         <FieldContent>
           <FieldLabel
             className="font-sans text-xs font-semibold tracking-normal text-foreground normal-case"

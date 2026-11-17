@@ -3,6 +3,15 @@ import { cloudinaryConfigured, createUploadSignature } from "@/lib/cloudinary";
 import { isAdminRequest } from "@/lib/admin";
 import { badRequest, readJson, unauthorized } from "@/lib/http";
 
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/gif",
+  "application/pdf",
+];
+
 export async function POST(request) {
   if (!(await isAdminRequest(request))) return unauthorized();
   if (!cloudinaryConfigured())
@@ -13,6 +22,9 @@ export async function POST(request) {
   const body = await readJson(request);
   if (!body) return badRequest();
   const { filename, contentType } = body;
+  // SVG and HTML can carry scripts; anything else has no use in the CMS.
+  if (!ALLOWED_TYPES.includes(String(contentType)))
+    return badRequest("Only JPEG, PNG, WebP, AVIF or GIF images and PDF files can be uploaded.");
   const resourceType = String(contentType || "").startsWith("image/")
     ? "image"
     : "raw";

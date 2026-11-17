@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { Accent, Eyebrow } from "@/components/site/typography";
+import { Chip, Highlight } from "@/components/site/typography";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,11 +44,11 @@ export default function LoginForm({ notice = "", onSignedIn }) {
             src="/logo.svg"
             width={176}
           />
-          <Eyebrow>Content studio</Eyebrow>
+          <Chip dot>Content studio</Chip>
           <h1 className="my-3 text-[42px] leading-[0.95] font-extrabold tracking-[-0.07em] sm:text-5xl">
             Make the work
             <br />
-            <Accent>visible.</Accent>
+            <Highlight>visible.</Highlight>
           </h1>
           <p className="mb-6 text-[13px] text-muted-foreground">
             Sign in to manage the COiN Lab website.

@@ -5,9 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "DM Mono", ui-monospace, monospace;
-  --font-serif: "Playfair Display Variable", ui-serif, Georgia, serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --font-heading: var(--font-sans);
 
   --color-background: var(--background);
@@ -43,19 +42,12 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Brand palette (from the COiN Lab logo) */
+  /* Brand: the blue-to-cyan of the COiN Lab logo. */
   --color-brand: var(--brand);
+  --color-brand-2: var(--brand-2);
+  /* Always-dark surface (photo scrims, CMS login) and its text colour. */
   --color-navy: var(--navy);
-  --color-navy-deep: var(--navy-deep);
   --color-navy-foreground: var(--navy-foreground);
-  --color-sky: var(--sky);
-  --color-ink-soft: var(--ink-soft);
-  --color-surface: var(--surface);
-  --color-wing-1: #1c2f6e;
-  --color-wing-2: #27408d;
-  --color-wing-3: #152a63;
-  --color-wing-4: #3b3d8a;
-  --color-wing-5: #101d45;
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -65,80 +57,113 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  --animate-marquee: marquee 30s linear infinite;
-  --animate-fade-up: fade-up 0.85s cubic-bezier(0.22, 0.61, 0.21, 1) both;
-  --animate-kenburns: kenburns 7.5s ease-out both;
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-shine: shine var(--duration) infinite linear;
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 0.61, 0.21, 1) both;
+  --animate-kenburns: kenburns 9s ease-out both;
 
   @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-100% - var(--gap))); }
+  }
+  @keyframes marquee-vertical {
+    from { transform: translateY(0); }
+    to { transform: translateY(calc(-100% - var(--gap))); }
+  }
+  @keyframes shine {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    to { background-position: 0% 0%; }
   }
   @keyframes fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(22px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
   }
   @keyframes kenburns {
-    from {
-      transform: scale(1);
-    }
-    to {
-      transform: scale(1.07);
-    }
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+  }
+  @keyframes count-up {
+    from { --num: 0; }
+  }
+  @keyframes slide-progress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
   }
 }
 
-:root {
-  --brand: #3f4291;
-  --navy: #0e1b40;
-  --navy-deep: #060b1c;
-  --navy-foreground: #c2cde8;
-  --sky: #9ccdee;
-  --ink-soft: #333f5f;
-  --surface: #e9eef8;
-  --success: #1e7d3c;
+/* Animatable integer for the CSS-only stat counters (see `count-up`). */
+@property --num {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
 
-  --background: #f3f6fb;
-  --foreground: #111c3a;
-  --card: #fcfdff;
-  --card-foreground: #111c3a;
-  --popover: #fcfdff;
-  --popover-foreground: #111c3a;
-  --primary: #0e1b40;
-  --primary-foreground: #fcfdff;
-  --secondary: #9ccdee;
-  --secondary-foreground: #111c3a;
-  --muted: #e9eef8;
-  --muted-foreground: #5b6783;
-  --accent: #e3ebfa;
-  --accent-foreground: #111c3a;
-  --destructive: #aa3333;
-  --border: #d8e0ee;
-  --input: #cbd5e8;
-  --ring: #4a5fb8;
-  --chart-1: #9ccdee;
-  --chart-2: #4a5fb8;
-  --chart-3: #3f4291;
-  --chart-4: #1c2f6e;
-  --chart-5: #0e1b40;
-  --radius: 0rem;
-  --sidebar: #0e1b40;
-  --sidebar-foreground: #c3cfe6;
-  --sidebar-primary: #9ccdee;
-  --sidebar-primary-foreground: #111c3a;
-  --sidebar-accent: #9ccdee;
-  --sidebar-accent-foreground: #111c3a;
-  --sidebar-border: #25335c;
-  --sidebar-ring: #9ccdee;
+:root {
+  --brand: #0a63d8;
+  --brand-2: #0891b2;
+  --navy: #070b16;
+  --navy-foreground: #c5d0e6;
+  --success: #15803d;
+
+  --background: #f6f8fc;
+  --foreground: #0a0f1e;
+  --card: #ffffff;
+  --card-foreground: #0a0f1e;
+  --popover: #ffffff;
+  --popover-foreground: #0a0f1e;
+  --primary: #0a63d8;
+  --primary-foreground: #ffffff;
+  --secondary: #e7edf7;
+  --secondary-foreground: #0a0f1e;
+  --muted: #edf1f8;
+  --muted-foreground: #525d77;
+  --accent: #e4ecfa;
+  --accent-foreground: #0a0f1e;
+  --destructive: #c62828;
+  --border: #dbe2ee;
+  --input: #c9d3e3;
+  --ring: #2f8cff;
+  --chart-1: #7dd3fc;
+  --chart-2: #2f8cff;
+  --chart-3: #0a63d8;
+  --chart-4: #053b9a;
+  --chart-5: #00226a;
+  --radius: 0.875rem;
+  --sidebar: #070b16;
+  --sidebar-foreground: #c5d0e6;
+  --sidebar-primary: #3d94ff;
+  --sidebar-primary-foreground: #04101f;
+  --sidebar-accent: #152037;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1a2338;
+  --sidebar-ring: #3d94ff;
+}
+
+.dark {
+  --brand: #4b9dff;
+  --brand-2: #22d3ee;
+  --success: #4ade80;
+
+  --background: #05070c;
+  --foreground: #f2f5fa;
+  --card: #0b0e15;
+  --card-foreground: #f2f5fa;
+  --popover: #0d1119;
+  --popover-foreground: #f2f5fa;
+  --primary: #4b9dff;
+  --primary-foreground: #04101f;
+  --secondary: #151a26;
+  --secondary-foreground: #f2f5fa;
+  --muted: #10141d;
+  --muted-foreground: #9aa5ba;
+  --accent: #161c2a;
+  --accent-foreground: #f2f5fa;
+  --destructive: #ff6b6b;
+  --border: #1c2230;
+  --input: #2a3244;
+  --ring: #4b9dff;
 }
 
 @layer base {
@@ -147,10 +172,34 @@
   }
   html {
     @apply scroll-smooth font-sans antialiased;
-    scroll-padding-top: 5.5rem;
+    scroll-padding-top: 6rem;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Slim themed scrollbar. Firefox uses the two standard properties; the
+     ::-webkit rules give Chromium and Safari the rounded thumb. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--foreground) 22%, transparent) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--foreground) 22%, transparent) content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(var(--brand), var(--brand-2)) content-box;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--brand) 30%, transparent);
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -172,19 +221,70 @@
 
 /* Page gutter + max width shared by every section. */
 @utility wrap {
-  @apply mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-10;
+  @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8;
 }
 
-/* Big editorial headline used across the site. */
+/* Section and page headline. */
 @utility display-heading {
-  @apply font-sans font-extrabold tracking-[-0.07em] text-balance;
-  font-size: clamp(2.625rem, 6vw + 0.6rem, 5rem);
-  line-height: 0.98;
+  @apply font-sans font-bold tracking-[-0.045em] text-balance;
+  font-size: clamp(2.125rem, 4.2vw + 0.75rem, 4rem);
+  line-height: 1.04;
 }
 
-/* Small mono caption (section tags, eyebrows, meta labels). */
+/* Small mono caption (chips, meta labels). */
 @utility label-caps {
-  @apply font-mono text-[0.625rem] leading-normal tracking-[0.12em] uppercase;
+  @apply font-mono text-[0.6875rem] leading-normal tracking-[0.14em] uppercase;
+}
+
+/* Brand gradient on text: the highlighted word of a headline. */
+@utility text-gradient {
+  background-image: linear-gradient(100deg, var(--brand), var(--brand-2));
+  background-clip: text;
+  color: transparent;
+}
+
+/* Second, offset outline: the "double bezel" around cards and panels. */
+@utility bezel {
+  outline: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
+  outline-offset: 5px;
+}
+
+/* Faint dot grid for section backgrounds. */
+@utility dot-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 14%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/*
+ * Scroll reveal with no JavaScript: runs as the element enters the viewport.
+ * Browsers without scroll-driven animations just show the content.
+ */
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: fade-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+}
+
+/*
+ * CSS-only number counter. Set `--num` to the target on the element; the
+ * visible digits come from ::after, so pair it with an sr-only real number.
+ */
+@utility count-up {
+  counter-reset: num var(--num);
+  &::after {
+    content: counter(num, decimal-leading-zero);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    animation: count-up 1.4s ease-out both;
+    @supports (animation-timeline: view()) {
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
 }
 
 @layer components {
@@ -202,13 +302,13 @@
   }
   .rich-text h3,
   .rich-text h4 {
-    @apply mt-5 mb-2 text-xl leading-tight font-extrabold tracking-tight text-foreground first:mt-0;
+    @apply mt-5 mb-2 text-xl leading-tight font-bold tracking-tight text-foreground first:mt-0;
   }
   .rich-text h4 {
     @apply text-base;
   }
   .rich-text a {
-    @apply text-brand underline underline-offset-[3px] hover:text-navy;
+    @apply text-brand underline underline-offset-[3px] hover:text-foreground;
   }
   .rich-text ul {
     @apply list-disc pl-[18px];
@@ -217,6 +317,88 @@
     @apply my-1 marker:text-brand;
   }
   .rich-text blockquote {
-    @apply border-l-2 border-sky py-0.5 pl-3.5 italic;
+    @apply border-l-2 border-brand py-0.5 pl-3.5 italic;
+  }
+}
+
+/* ---------- Motion details ---------- */
+
+@theme inline {
+  --animate-draw: draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
+  --animate-float: float 6s ease-in-out infinite alternate;
+  /* Each route fades in (app/(site)/template.jsx). Opacity only: no layout shift. */
+  --animate-page-in: page-in 0.35s ease-out both;
+
+  /* Strokes use pathLength="1", so one keyframe draws any path. */
+  @keyframes draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes float {
+    from { translate: 0 -4px; }
+    to { translate: 0 4px; }
+  }
+  @keyframes theme-reveal {
+    from { clip-path: circle(0 at var(--reveal-x, 50%) var(--reveal-y, 0)); }
+    to { clip-path: circle(150vmax at var(--reveal-x, 50%) var(--reveal-y, 0)); }
+  }
+  @keyframes page-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+/* Theme switch: the new theme expands in a circle from the toggle button. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  animation: theme-reveal 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/*
+ * Navigation loading bar (components/site/nav-progress.jsx). It creeps toward
+ * 90% while the next page loads, then completes and fades.
+ */
+@utility nav-progress {
+  @apply pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-linear-to-r from-brand to-brand-2 opacity-0;
+  scale: 0 1;
+  box-shadow: 0 0 10px var(--brand);
+  &[data-state="loading"] {
+    opacity: 1;
+    scale: 0.9 1;
+    transition: scale 8s cubic-bezier(0.1, 0.7, 0.1, 1);
+  }
+  &[data-state="done"] {
+    scale: 1 1;
+    transition: scale 0.2s ease-out, opacity 0.3s ease-out 0.2s;
+  }
+}
+
+/*
+ * Soft glow that follows the cursor over an element marked data-spotlight.
+ * components/site/pointer-glow.jsx keeps --mx / --my up to date.
+ */
+@layer components {
+  [data-spotlight] {
+    position: relative;
+  }
+  [data-spotlight]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--brand) 16%, transparent), transparent 70%);
+  }
+  @media (hover: hover) {
+    [data-spotlight]:hover::before {
+      opacity: 1;
+    }
   }
 }

@@ -1,109 +1,75 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, BookOpen, User } from "lucide-react";
+import Crumbs from "@/components/site/crumbs";
+import PublicationList from "@/components/site/publication-list";
 import RichText from "@/components/site/rich-text";
-import { Eyebrow } from "@/components/site/typography";
+import { Chip } from "@/components/site/typography";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { getCollection, mediaUrl } from "@/lib/content";
-import { initials } from "@/lib/media";
+import { getList, getPublications, getRecord, mediaUrl } from "@/lib/content";
+import { thumbUrl } from "@/lib/media";
 
 export const revalidate = 10;
 
-async function findPerson(slug) {
-  return (await getCollection("people")).find((item) => item.slug === slug);
-}
+const findPerson = (slug) => getRecord("people", slug);
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const person = await findPerson(slug);
-  return person ? { title: person.name } : {};
+  return person ? { title: person.name, description: `${person.name}, ${person.role} at COiN Lab.` } : {};
 }
 
 export async function generateStaticParams() {
-  return (await getCollection("people"))
-    .filter((person) => person.slug)
-    .map((person) => ({ slug: person.slug }));
+  return (await getList("people", "slug")).filter((person) => person.slug).map((person) => ({ slug: person.slug }));
 }
 
 export default async function PersonPage({ params }) {
   const { slug } = await params;
-  const [person, wings] = await Promise.all([
-    findPerson(slug),
-    getCollection("wings"),
-  ]);
+  const [person, wings, allPublications] = await Promise.all([findPerson(slug), getList("wings", "slug,title,shortTitle"), getPublications()]);
   if (!person) notFound();
-  const photo = mediaUrl(person.photoKey);
-  const personWings = (person.wingSlugs || [])
-    .map((wingSlug) => wings.find((wing) => wing.slug === wingSlug))
-    .filter(Boolean);
+  const photo = thumbUrl(mediaUrl(person.photoKey), 320, { square: false });
+  const personWings = (person.wingSlugs || []).map((wingSlug) => wings.find((wing) => wing.slug === wingSlug)).filter(Boolean);
+  const publications = allPublications.filter((pub) => pub.authors.some((author) => author.href === `/people/${slug}`));
 
   return (
-    <div className="min-h-full bg-surface pb-24">
-      <div className="wrap max-w-[980px] pt-6 md:pt-8">
-        <Button asChild className="-ml-2.5 text-brand" variant="ghost">
-          <Link href="/people">
-            <ArrowLeft data-icon="inline-start" /> All people
-          </Link>
-        </Button>
-        <div className="mt-8 grid items-start gap-10 md:mt-10 md:grid-cols-[264px_minmax(0,1fr)] md:gap-12">
-          <div className="relative w-[min(220px,66vw)] md:w-[264px]">
-            {photo ? (
-              <img
-                alt={person.name}
-                className="aspect-4/5 w-full border bg-card object-cover shadow-[14px_14px_0_var(--sky)]"
-                src={photo}
-              />
-            ) : (
-              <div
-                aria-hidden="true"
-                className="flex aspect-4/5 w-full items-center justify-center border bg-navy text-[54px] font-extrabold tracking-[-0.05em] text-white shadow-[14px_14px_0_var(--sky)]"
-              >
-                {initials(person.name)}
-              </div>
-            )}
-            <Badge className="label-caps absolute bottom-0 left-0 h-auto px-3 py-2 text-[0.5625rem]">
-              {person.type || "researcher"}
-            </Badge>
+    <div className="relative isolate">
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-[420px] dot-grid mask-[linear-gradient(to_bottom,black,transparent)] opacity-70" />
+      <div className="wrap flex max-w-[1080px] flex-col gap-10 pt-32 pb-16 md:pt-40 md:pb-24">
+        <Crumbs current={person.name} trail={[{ href: "/", label: "Home" }, { href: "/people", label: "People" }]} />
+        <div className="grid items-start gap-10 md:grid-cols-[280px_minmax(0,1fr)] md:gap-14">
+          <div className="bezel relative w-[min(240px,70vw)] animate-fade-up overflow-hidden rounded-3xl border md:w-full">
+            {/* Avatar swaps to the icon when there is no photo or it fails to load. */}
+            <Avatar className="aspect-4/5 size-auto w-full rounded-none after:hidden">
+              {photo && <AvatarImage alt={person.name} className="aspect-auto rounded-none" src={photo} />}
+              <AvatarFallback className="rounded-none bg-linear-to-br from-brand/25 to-brand-2/10 text-brand">
+                <User aria-hidden="true" className="size-24" strokeWidth={1.25} />
+              </AvatarFallback>
+            </Avatar>
+            <Badge className="label-caps absolute bottom-3 left-3 h-auto px-3 py-1">{person.type || "researcher"}</Badge>
           </div>
-          <div className="min-w-0">
-            <Eyebrow>COiN community</Eyebrow>
-            <h1 className="mt-3 mb-3.5 text-[clamp(2.25rem,5.5vw,3.875rem)] leading-[1.02] font-extrabold tracking-[-0.06em] text-balance">
-              {person.name}
-            </h1>
-            <p className="label-caps text-brand">{person.role}</p>
-            {person.bio && (
-              <RichText
-                className="mt-5 max-w-[650px] text-[15px] text-[#4d5a7c] md:text-base"
-                text={person.bio}
-              />
-            )}
-            <Separator className="mt-9 mb-4 bg-[#c9d3ea]" />
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="label-caps mr-1 text-[0.5625rem] text-muted-foreground">
-                Research connection
-              </span>
+          <div className="flex min-w-0 animate-fade-up flex-col items-start gap-5 [animation-delay:80ms]">
+            <Chip dot>{person.role}</Chip>
+            <h1 className="display-heading">{person.name}</h1>
+            {person.bio && <RichText className="max-w-[640px] text-base text-muted-foreground md:text-lg" text={person.bio} />}
+            <div className="flex w-full flex-wrap items-center gap-2 border-t pt-5">
+              <span className="label-caps mr-2 text-muted-foreground">Research wings</span>
               {personWings.map((wing) => (
-                <Button
-                  asChild
-                  className="bg-card"
-                  key={wing.slug}
-                  variant="outline"
-                >
-                  <Link href={`/wings/${wing.slug}`}>
-                    {wing.title} <ArrowUpRight data-icon="inline-end" />
-                  </Link>
+                <Button asChild key={wing.slug} variant="outline">
+                  <Link href={`/wings/${wing.slug}`}>{wing.shortTitle || wing.title} <ArrowUpRight data-icon="inline-end" /></Link>
                 </Button>
               ))}
-              {!personWings.length && (
-                <span className="text-xs text-muted-foreground">
-                  Works across the lab — wing connections coming soon.
-                </span>
-              )}
+              {!personWings.length && <span className="text-sm text-muted-foreground">Works across the lab.</span>}
             </div>
           </div>
         </div>
+        {publications.length > 0 && (
+          <section aria-labelledby="person-papers" className="flex flex-col gap-5">
+            <Chip id="person-papers"><BookOpen aria-hidden="true" /> Publications</Chip>
+            <PublicationList publications={publications} />
+          </section>
+        )}
       </div>
     </div>
   );

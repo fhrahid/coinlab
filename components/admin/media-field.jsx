@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 const previewBox =
-  "flex size-24 shrink-0 flex-col items-center justify-center gap-1.5 overflow-hidden border bg-card p-2 text-center text-muted-foreground";
+  "flex size-24 shrink-0 flex-col items-center justify-center gap-1.5 overflow-hidden rounded-xl border bg-card p-2 text-center text-muted-foreground";
 
 // Choose / upload / cancel / remove buttons shared by every upload spot.
 export function FileActions({
@@ -83,7 +83,7 @@ export default function MediaField({
   onChange,
 }) {
   return (
-    <div className="flex flex-col gap-3 border bg-background p-3.5 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 rounded-2xl border bg-background p-3.5 sm:flex-row sm:items-center">
       <div className="flex min-w-0 flex-1 flex-col gap-2.5">
         <div className="min-w-0">
           <strong className="block text-xs">{label}</strong>
@@ -107,7 +107,7 @@ export default function MediaField({
         upload.preview ? (
           <img
             alt="Preview of the selected file"
-            className="size-24 shrink-0 border bg-card object-cover"
+            className="size-24 shrink-0 rounded-xl border bg-card object-cover"
             src={upload.preview}
           />
         ) : (
@@ -132,7 +132,7 @@ export default function MediaField({
         ) : (
           <img
             alt="Currently attached file"
-            className="size-24 shrink-0 border bg-card object-cover"
+            className="size-24 shrink-0 rounded-xl border bg-card object-cover"
             src={value}
           />
         )

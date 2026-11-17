@@ -7,6 +7,7 @@ import {
   FileUser,
   Handshake,
   Images,
+  ListOrdered,
   LogOut,
   Mail,
   Settings2,
@@ -36,6 +37,7 @@ const icons = {
   partners: Handshake,
   slides: Images,
   jobs: Briefcase,
+  roles: ListOrdered,
 };
 const badgeClass =
   "font-mono text-[0.625rem] peer-data-active/menu-button:text-sidebar-accent-foreground";
@@ -67,7 +69,7 @@ export default function AppSidebar({
             src="/logo.svg"
             width={128}
           />
-          <strong className="text-sm tracking-[0.04em]">COiN CMS</strong>
+          <strong className="text-sm tracking-[0.04em]">CMS</strong>
         </div>
       </SidebarHeader>
       <SidebarContent>

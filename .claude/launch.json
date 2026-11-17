@@ -4,14 +4,35 @@
     {
       "name": "coinlab-prod",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["exec", "next", "start", "-p", "3111"],
+      "runtimeArgs": [
+        "exec",
+        "next",
+        "start",
+        "-p",
+        "3111"
+      ],
       "port": 3111
     },
     {
       "name": "coinlab-dev",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["exec", "next", "dev", "-p", "3112"],
+      "runtimeArgs": [
+        "exec",
+        "next",
+        "dev",
+        "-p",
+        "3112"
+      ],
       "port": 3112
+    },
+    {
+      "name": "coinlab-verify",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "process.env.NEXT_DIST_DIR='.next-verify';process.argv=[process.argv[0],'next','start','-p','3113'];require('./node_modules/next/dist/bin/next')"
+      ],
+      "port": 3113
     }
   ]
 }

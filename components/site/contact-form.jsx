@@ -52,7 +52,7 @@ export default function ContactForm() {
             <Check aria-hidden="true" className="size-5" />
           </span>
           <strong className="text-base font-bold">Message received.</strong>
-          <p className="text-xs leading-[1.7] text-muted-foreground">
+          <p className="text-sm leading-relaxed text-muted-foreground">
             Thank you, {form.name.split(" ")[0]}. The COiN Lab team will reply
             to <b className="text-foreground">{form.email}</b> soon.
           </p>
@@ -129,7 +129,7 @@ export default function ContactForm() {
               disabled={status === "sending"}
               size="xl"
               type="submit"
-              variant="secondary"
+              variant="glow"
             >
               {status === "sending" ? (
                 <>
