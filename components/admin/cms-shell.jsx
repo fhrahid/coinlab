@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import AppSidebar from "@/components/admin/app-sidebar";
+import ApplicationsView from "@/components/admin/applications-view";
 import MessagesView from "@/components/admin/messages-view";
 import RecordForm from "@/components/admin/record-form";
 import RecordList from "@/components/admin/record-list";
@@ -25,6 +26,7 @@ export default function CmsShell({ onSignedOut }) {
   const [loading, setLoading] = useState(true);
   const [wingOptions, setWingOptions] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [editing, setEditing] = useState(null);
   const [formKey, setFormKey] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -34,6 +36,11 @@ export default function CmsShell({ onSignedOut }) {
   const loadMessages = useCallback(async () => {
     const { ok, data } = await api("/api/messages");
     if (ok && Array.isArray(data)) setMessages(data);
+  }, []);
+
+  const loadApplications = useCallback(async () => {
+    const { ok, data } = await api("/api/applications");
+    if (ok && Array.isArray(data)) setApplications(data);
   }, []);
 
   const loadWingOptions = useCallback(async () => {
@@ -65,7 +72,8 @@ export default function CmsShell({ onSignedOut }) {
     loadItems("wings");
     loadWingOptions();
     loadMessages();
-  }, [loadItems, loadWingOptions, loadMessages]);
+    loadApplications();
+  }, [loadItems, loadWingOptions, loadMessages, loadApplications]);
 
   const startNew = () => {
     setEditing(null);
@@ -79,6 +87,10 @@ export default function CmsShell({ onSignedOut }) {
       loadSeq.current += 1;
       setItems([]);
       loadMessages();
+    } else if (next === "applications") {
+      loadSeq.current += 1;
+      setItems([]);
+      loadApplications();
     } else loadItems(next);
   };
 
@@ -103,7 +115,12 @@ export default function CmsShell({ onSignedOut }) {
   };
 
   const isMessages = view === "messages";
-  const title = isMessages ? "Messages" : collections[view].label;
+  const isApplications = view === "applications";
+  const title = isMessages
+    ? "Messages"
+    : isApplications
+      ? "Applications"
+      : collections[view].label;
 
   return (
     <SidebarProvider>
@@ -113,6 +130,7 @@ export default function CmsShell({ onSignedOut }) {
         onSelect={switchView}
         onSignOut={() => signOut()}
         unread={messages.filter((message) => !message.read).length}
+        unreadApplications={applications.filter((a) => !a.read).length}
         view={view}
       />
       <SidebarInset className="min-w-0 bg-[#eef1f9]">
@@ -120,7 +138,7 @@ export default function CmsShell({ onSignedOut }) {
           <SidebarTrigger className="size-10" />
           <Separator className="mr-1 h-5!" orientation="vertical" />
           <span className="truncate text-sm font-bold">{title}</span>
-          {!isMessages && (
+          {!isMessages && !isApplications && (
             <Button
               className="ml-auto"
               onClick={startNew}
@@ -140,6 +158,11 @@ export default function CmsShell({ onSignedOut }) {
           </div>
           {isMessages ? (
             <MessagesView messages={messages} setMessages={setMessages} />
+          ) : isApplications ? (
+            <ApplicationsView
+              applications={applications}
+              setApplications={setApplications}
+            />
           ) : (
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(220px,300px)_minmax(0,1fr)]">
               <RecordList

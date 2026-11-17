@@ -4,6 +4,7 @@ import {
   Briefcase,
   ExternalLink,
   FileText,
+  FileUser,
   Handshake,
   Images,
   LogOut,
@@ -43,6 +44,7 @@ export default function AppSidebar({
   view,
   counts,
   unread,
+  unreadApplications,
   onSelect,
   onOpenSettings,
   onSignOut,
@@ -107,6 +109,22 @@ export default function AppSidebar({
                 {unread > 0 && (
                   <SidebarMenuBadge className={`top-2.5! ${badgeClass}`}>
                     {unread}
+                    <span className="sr-only"> unread</span>
+                  </SidebarMenuBadge>
+                )}
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  className="h-10"
+                  isActive={view === "applications"}
+                  onClick={run(() => onSelect("applications"))}
+                >
+                  <FileUser />
+                  <span>Applications</span>
+                </SidebarMenuButton>
+                {unreadApplications > 0 && (
+                  <SidebarMenuBadge className={`top-2.5! ${badgeClass}`}>
+                    {unreadApplications}
                     <span className="sr-only"> unread</span>
                   </SidebarMenuBadge>
                 )}

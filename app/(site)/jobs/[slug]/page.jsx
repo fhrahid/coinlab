@@ -1,16 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  ArrowUpRight,
-  CalendarDays,
-  MapPin,
-  Wallet,
-} from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Wallet } from "lucide-react";
+import ApplyForm from "@/components/site/apply-form";
 import RichText from "@/components/site/rich-text";
 import { Accent } from "@/components/site/typography";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getCollection } from "@/lib/content";
 
@@ -165,15 +159,19 @@ export default async function JobPage({ params }) {
             <RichText className="mt-4" text={posting.applyInfo} />
           )}
           {open ? (
-            <Button asChild className="mt-5" size="xl">
-              <a
-                href={`mailto:coinlab@seu.edu.bd?subject=${applySubject}`}
-                rel="noreferrer"
-                target="_blank"
-              >
-                Apply by email <ArrowUpRight data-icon="inline-end" />
-              </a>
-            </Button>
+            <>
+              <ApplyForm jobSlug={posting.slug} />
+              <p className="mt-3 text-xs text-muted-foreground">
+                Prefer email? Write to{" "}
+                <a
+                  className="font-semibold text-brand hover:underline"
+                  href={`mailto:coinlab@seu.edu.bd?subject=${applySubject}`}
+                >
+                  coinlab@seu.edu.bd
+                </a>{" "}
+                with the job title in the subject line.
+              </p>
+            </>
           ) : (
             <Card className="mt-5 bg-accent py-0">
               <CardContent className="p-4 text-sm text-muted-foreground">
