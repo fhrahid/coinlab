@@ -5,30 +5,33 @@
 - Public homepage with the COiN Lab visual system.
 - Research wing directory and individual pages at `/wings` and `/wings/[slug]`.
 - People directory and individual profiles at `/people` and `/people/[slug]`.
-- Admin CMS at `/admin` for managing wings, people, and papers.
+- Admin CMS at `/admin` for managing wings, people, roles, papers, partners, slideshow photos and job postings, with inboxes for messages and job applications.
+- Jobs page at `/jobs` with on-site applications.
 - MongoDB-backed content APIs with seed-content fallback for local development.
 - Cloudinary signed-upload endpoint at `/api/uploads`.
 
 ## Stack and structure
 
-Next.js 15 (App Router, React 19) · Tailwind CSS v4 · shadcn/ui (Radix base, `radix-lyra` style, lucide icons) · MongoDB · Cloudinary.
+Next.js 15 (App Router, React 19) · Tailwind CSS v4 · shadcn/ui (Radix base, `radix-maia` style, lucide icons) · light and dark themes · MongoDB · Cloudinary.
 
 ```
 app/
-  layout.jsx          root layout: fonts, toaster, tooltip provider
-  globals.css         Tailwind + design tokens (brand palette mapped onto shadcn variables)
-  (site)/             public pages; layout.jsx adds the shared header and footer
+  layout.jsx          root layout: fonts, theme provider, toaster
+  globals.css         design tokens for both themes, motion utilities
+  (site)/             public pages: home, wings, people, papers, jobs
   admin/              CMS entry (session gate)
   api/                route handlers
 components/
   ui/                 shadcn components (add more with: pnpm dlx shadcn@latest add <name>)
-  site/               header, footer, typography and other shared public pieces
+  site/               header, footer, cards, typography and other shared public blocks
   home/               homepage sections
-  admin/              CMS: sidebar, record list/form, slide editor, inbox, settings
-lib/                  data access, auth, Cloudinary, and client-safe helpers
+  admin/              CMS: sidebar, record list/form, slide editor, inboxes, settings
+lib/                  data access, auth, Cloudinary, and pure helpers with tests
 ```
 
-Styling rules: use the semantic tokens from `app/globals.css` (`bg-primary`, `text-muted-foreground`, `text-brand`, `bg-navy`…) rather than raw colours, and reach for a `components/ui` component before writing custom markup. Brand colours and fonts are changed in one place: the `:root` block of `app/globals.css`.
+Working rules for contributors and AI agents are in [AGENTS.md](AGENTS.md). The design system is in [DESIGN.md](DESIGN.md).
+
+Checks: `pnpm lint`, `pnpm test`, `pnpm build`.
 
 ## Local setup
 
