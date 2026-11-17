@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getCollection } from "@/lib/content";
 import { getDb } from "@/lib/mongodb";
@@ -5,7 +6,8 @@ import { destroyAsset } from "@/lib/cloudinary";
 import { isAdminRequest } from "@/lib/admin";
 import { badRequest, readJson, unauthorized } from "@/lib/http";
 import { slugify } from "@/lib/citation";
-import { roleType } from "@/lib/roles";
+import { roleTier, seedRoles } from "@/lib/roles";
+import { jobTypes, paperTypes } from "@/lib/collections";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +41,9 @@ const schema = {
       "doi",
       "wingSlugs",
       "pdfKey",
+      "type",
+      "featured",
+      "codeUrl",
     ],
     media: ["pdfKey"],
   },
@@ -67,7 +72,14 @@ const schema = {
     ],
     media: [],
   },
+  roles: { fields: ["name", "serial", "tier"], media: [] },
 };
+
+// A whole number, or null when the field is left blank.
+const wholeNumber = (value) =>
+  value === "" || value == null || Number.isNaN(Number(value))
+    ? null
+    : Math.round(Number(value));
 
 const list = (value, separator) =>
   (Array.isArray(value)
@@ -114,22 +126,29 @@ export async function POST(request) {
     record.focusPoints = list(record.focusPoints, "\n");
   if ("requirements" in record)
     record.requirements = list(record.requirements, "\n");
+  if ("serial" in record) record.serial = wholeNumber(record.serial);
   if ("authors" in record) record.authors = list(record.authors, ",");
   if ("wingSlugs" in record) record.wingSlugs = list(record.wingSlugs, ",");
   if ("year" in record)
     record.year = Number(record.year) || new Date().getFullYear();
   if ("active" in record) record.active = record.active !== false;
-  if (
-    "deadline" in record &&
-    !/^\d{4}-\d{2}-\d{2}$/.test(record.deadline || "")
-  )
+  if ("featured" in record) record.featured = record.featured === true;
+  if (collection === "papers" && !paperTypes.includes(record.type))
+    record.type = paperTypes[0];
+  if (collection === "jobs" && !jobTypes.includes(record.type))
+    record.type = jobTypes[0];
+  if ("deadline" in record && !/^\d{4}-\d{2}-\d{2}$/.test(record.deadline || ""))
     record.deadline = "";
-  if (collection === "people") record.type = roleType(record.role);
   if (collection === "jobs")
     record.postedAt =
-      record.postedAt && !Number.isNaN(new Date(record.postedAt))
+      record.postedAt && !Number.isNaN(new Date(record.postedAt).getTime())
         ? new Date(record.postedAt)
         : new Date();
+  // Rendered as a link on the public site: only http(s) URLs are stored.
+  if ("codeUrl" in record && !/^https?:\/\//i.test(String(record.codeUrl)))
+    record.codeUrl = "";
+  if (collection === "roles" && !String(record.name || "").trim())
+    return badRequest("Give the role a name before saving.");
   for (const [key, value] of Object.entries(record))
     if (typeof value === "string") record[key] = value.trim();
 
@@ -147,6 +166,20 @@ export async function POST(request) {
   const db = await getDb();
   const items = db.collection(collection);
   const lookupSlug = validSlug(originalSlug) ? originalSlug : slug;
+
+  // The profile badge shows the tier of the person's role ("Leadership"…).
+  if (collection === "people") {
+    const role = (await getCollection("roles")).find(
+      (item) => item.name === record.role,
+    );
+    record.type = role ? roleTier(role) : "";
+  }
+  // Roles start as a built-in list; the first save copies that list into the
+  // database so editing one role never hides the others.
+  if (collection === "roles" && !(await items.estimatedDocumentCount()))
+    await items.insertMany(
+      seedRoles.map((role) => ({ ...role, updatedAt: new Date() })),
+    );
   // Renaming a slug used to upsert a second copy and leave the old record live.
   if (lookupSlug !== slug && (await items.findOne({ slug })))
     return NextResponse.json(
@@ -159,6 +192,22 @@ export async function POST(request) {
     { $set: { ...record, slug, updatedAt: new Date() } },
     { upsert: true },
   );
+
+  // People store their role by name and its tier as `type`: keep both in
+  // step when a role is renamed or moved to another tier.
+  if (collection === "roles") {
+    const people = db.collection("people");
+    const tier = roleTier(record);
+    if (previous && previous.name !== record.name)
+      await people.updateMany(
+        { role: previous.name },
+        { $set: { role: record.name, type: tier } },
+      );
+    else
+      await people.updateMany({ role: record.name }, { $set: { type: tier } });
+  }
+  // Public pages are cached; refresh them now instead of after the timer.
+  revalidatePath("/", "layout");
 
   // A replaced or removed upload is no longer referenced anywhere: delete it
   // from Cloudinary so storage does not fill with orphans.
@@ -190,7 +239,20 @@ export async function DELETE(request) {
   const doc = await db.collection(collection).findOne({ slug });
   if (!doc)
     return NextResponse.json({ error: "Record not found" }, { status: 404 });
+  if (collection === "roles") {
+    const holders = await db
+      .collection("people")
+      .countDocuments({ role: doc.name });
+    if (holders)
+      return NextResponse.json(
+        {
+          error: `${holders} ${holders === 1 ? "person has" : "people have"} this role. Give them another role first.`,
+        },
+        { status: 409 },
+      );
+  }
   await db.collection(collection).deleteOne({ slug });
+  revalidatePath("/", "layout");
   const mediaRemoved = [];
   for (const field of schema[collection].media)
     if (doc[field] && (await destroyAsset(doc[field])))

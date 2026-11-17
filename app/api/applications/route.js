@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { isAdminRequest } from "@/lib/admin";
-import { badRequest, readJson, unauthorized } from "@/lib/http";
-import { getCollection } from "@/lib/content";
+import { badRequest, limited, readJson, unauthorized } from "@/lib/http";
+import { getRecord } from "@/lib/content";
+import { isJobOpen } from "@/lib/jobs";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,8 @@ export async function POST(request) {
       { error: "Applications are not available yet." },
       { status: 503 },
     );
+  const blocked = limited(request, "apply", { limit: 5, windowMs: 10 * 60_000 });
+  if (blocked) return blocked;
   const body = await readJson(request);
   const { jobSlug, name, email, phone, link, message, website } = body || {};
   if (website) return NextResponse.json({ ok: true });
@@ -35,14 +38,9 @@ export async function POST(request) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email)))
     return badRequest("That email address does not look right.");
 
-  const job = (await getCollection("jobs")).find(
-    (item) => item.slug === String(jobSlug).slice(0, 120),
-  );
+  const job = await getRecord("jobs", String(jobSlug).slice(0, 120));
   if (!job) return badRequest("This posting does not exist.");
-  const expired =
-    job.active === false ||
-    (job.deadline && job.deadline < new Date().toISOString().slice(0, 10));
-  if (expired)
+  if (!isJobOpen(job))
     return badRequest("This position is no longer accepting applications.");
 
   const record = {

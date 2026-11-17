@@ -1,70 +1,65 @@
-import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-// Small mono caption with a dot, used above page titles.
-export function Eyebrow({ className, children, ...props }) {
+// Small mono pill above headings ("RESEARCH WINGS").
+export function Chip({ className, dot = false, children, ...props }) {
   return (
-    <p
-      className={cn(
-        "label-caps flex items-center gap-2.5 text-muted-foreground",
-        className,
-      )}
-      {...props}
-    >
-      <span
-        aria-hidden="true"
-        className="size-2 shrink-0 rounded-full bg-brand"
-      />
+    <Badge className={cn("label-caps h-auto gap-2 px-3 py-1 text-muted-foreground", className)} variant="outline" {...props}>
+      {dot && <span aria-hidden="true" className="size-1.5 animate-pulse rounded-full bg-brand" />}
       {children}
-    </p>
+    </Badge>
   );
 }
 
-// Numbered section marker on the homepage: "03  THE RESEARCH MAP".
-export function SectionTag({ number, className, children, ...props }) {
-  return (
-    <p
-      className={cn(
-        "label-caps flex items-center gap-2.5 text-muted-foreground",
-        className,
-      )}
-      {...props}
-    >
-      <span className="text-brand">{number}</span>
-      <span>{children}</span>
-    </p>
-  );
+// Gradient-highlighted word(s) inside a headline.
+export function Highlight({ className, ...props }) {
+  return <span className={cn("text-gradient", className)} {...props} />;
 }
 
-// The serif second line of every display headline.
-export function Accent({ className, ...props }) {
+/**
+ * Wraps text with a hand-drawn underline that draws itself, as if sketched
+ * with a pen. `delay` (ms) staggers several marks; `onView` draws when the
+ * text scrolls into view instead of on load.
+ */
+export function Scribble({ children, delay = 0, onView = false, className }) {
   return (
-    <em
-      className={cn(
-        "font-serif font-medium tracking-[-0.06em] text-brand not-italic",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-// Underlined text link with an arrow ("View all research ↗").
-export function ArrowLink({ className, children, ...props }) {
-  return (
-    <Link
-      className={cn(
-        "group/link inline-flex w-fit items-center gap-2 border-b border-brand/35 pb-2 text-xs font-bold whitespace-nowrap text-brand transition-colors hover:border-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-        className,
-      )}
-      {...props}
-    >
+    <span className={cn("relative inline-block whitespace-nowrap", className)}>
       {children}
-      <ArrowUpRight
-        aria-hidden="true"
-        className="size-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
-      />
-    </Link>
+      <svg aria-hidden="true" className="pointer-events-none absolute inset-x-0 -bottom-[0.18em] h-[0.32em] w-full overflow-visible text-brand-2" preserveAspectRatio="none" viewBox="0 0 100 12">
+        <path
+          className={cn("animate-draw motion-reduce:animate-none", onView && "supports-[animation-timeline:view()]:[animation-range:entry_20%_cover_40%] supports-[animation-timeline:view()]:[animation-timeline:view()]")}
+          d="M2 8 C 18 2, 30 11, 48 6 S 80 3, 98 7"
+          fill="none"
+          pathLength="1"
+          stroke="currentColor"
+          strokeDasharray="1"
+          strokeLinecap="round"
+          strokeWidth="2.5"
+          style={{ animationDelay: `${delay}ms` }}
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+    </span>
+  );
+}
+
+// Chip + headline + supporting line: the opening of every section.
+export function SectionHeader({ chip, title, children, align = "left", as: Heading = "h2", className }) {
+  return (
+    <div className={cn("reveal flex flex-col gap-4", align === "center" ? "items-center text-center" : "items-start", className)}>
+      {chip && <Chip>{chip}</Chip>}
+      <Heading className="display-heading">{title}</Heading>
+      {children && <p className="max-w-[600px] text-base leading-relaxed text-pretty text-muted-foreground md:text-lg">{children}</p>}
+    </div>
+  );
+}
+
+// The arrow-in-a-circle that ends pill buttons: <Button>Label <ArrowBadge /></Button>
+export function ArrowBadge({ className }) {
+  return (
+    <span className={cn("flex size-8 items-center justify-center overflow-hidden rounded-full bg-current/15", className)} data-icon="inline-end">
+      <ArrowUpRight aria-hidden="true" className="size-4 transition-transform duration-300 group-hover/button:translate-x-0.5 group-hover/button:-translate-y-0.5" />
+    </span>
   );
 }

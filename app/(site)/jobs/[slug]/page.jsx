@@ -1,191 +1,117 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CalendarDays, MapPin, Wallet } from "lucide-react";
+import { CalendarDays, Check, MapPin, Wallet } from "lucide-react";
 import ApplyForm from "@/components/site/apply-form";
+import Crumbs from "@/components/site/crumbs";
+import PageHero from "@/components/site/page-hero";
 import RichText from "@/components/site/rich-text";
-import { Accent } from "@/components/site/typography";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { getCollection } from "@/lib/content";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getList, getRecord } from "@/lib/content";
+import { formatDate, isJobOpen } from "@/lib/jobs";
 
 export const revalidate = 10;
 
-const today = () => new Date().toISOString().slice(0, 10);
-const isOpen = (job) =>
-  job.active !== false && (!job.deadline || job.deadline >= today());
-const formatDate = (value) =>
-  new Date(value).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
+// Postings change often: render each on first request, then cache it.
 export function generateStaticParams() {
   return [];
 }
 
+const findJob = (slug) => getRecord("jobs", slug);
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const job = (await getCollection("jobs")).find((item) => item.slug === slug);
-  return { title: job?.title ? `${job.title} · Jobs` : "Jobs" };
+  const job = await findJob(slug);
+  return job ? { title: `${job.title} · Jobs`, description: job.summary || undefined } : { title: "Jobs" };
 }
+
+const meta = "inline-flex items-center gap-1.5";
 
 export default async function JobPage({ params }) {
   const { slug } = await params;
-  const [job, wings] = await Promise.all([
-    getCollection("jobs"),
-    getCollection("wings"),
-  ]);
-  const posting = job.find((item) => item.slug === slug);
-  if (!posting) notFound();
-  const open = isOpen(posting);
-  const wingLinks = (posting.wingSlugs || [])
-    .map((slug) => wings.find((wing) => wing.slug === slug))
-    .filter(Boolean);
-  const applySubject = encodeURIComponent(
-    `Application: ${posting.title} — COiN Lab`,
-  );
+  const [job, wings] = await Promise.all([findJob(slug), getList("wings", "slug,title,shortTitle")]);
+  if (!job) notFound();
+  const open = isJobOpen(job);
+  const jobWings = (job.wingSlugs || []).map((wingSlug) => wings.find((wing) => wing.slug === wingSlug)).filter(Boolean);
+  const mailto = `mailto:coinlab@seu.edu.bd?subject=${encodeURIComponent(`Application: ${job.title} — COiN Lab`)}`;
 
   return (
-    <div className="wrap pb-20 pt-8 sm:pt-10">
-      <Link
-        className="text-xs font-semibold text-brand hover:underline"
-        href="/jobs"
+    <>
+      <PageHero
+        after={
+          <div className="flex animate-fade-up flex-col gap-4 [animation-delay:120ms]">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant={open ? "default" : "secondary"}>{open ? "Open" : "Closed"}</Badge>
+              {job.type && <Badge variant="outline">{job.type}</Badge>}
+              {jobWings.map((wing) => (
+                <Badge asChild className="h-6" key={wing.slug} variant="outline">
+                  <Link href={`/wings/${wing.slug}`}>{wing.shortTitle || wing.title}</Link>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+              {job.location && <span className={meta}><MapPin aria-hidden="true" className="size-4" /> {job.location}</span>}
+              {job.salary && <span className={meta}><Wallet aria-hidden="true" className="size-4" /> {job.salary}</span>}
+              {job.postedAt && <span className={meta}><CalendarDays aria-hidden="true" className="size-4" /> Posted {formatDate(job.postedAt)}</span>}
+              {job.deadline && <span className={meta}><CalendarDays aria-hidden="true" className="size-4" /> {open ? "Apply by" : "Closed"} {formatDate(job.deadline)}</span>}
+            </div>
+          </div>
+        }
+        before={<Crumbs current={job.title} trail={[{ href: "/", label: "Home" }, { href: "/jobs", label: "Jobs" }]} />}
+        chip="Job posting"
+        title={job.title}
       >
-        <ArrowLeft data-icon="inline-start" /> All positions
-      </Link>
+        {job.summary}
+      </PageHero>
 
-      <header className="mt-8 border-b pb-8">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge
-            className="label-caps text-[0.5625rem]"
-            variant={open ? "default" : "secondary"}
-          >
-            {open ? "Open" : "Closed"}
-          </Badge>
-          <Badge className="label-caps text-[0.5625rem]" variant="outline">
-            {posting.type}
-          </Badge>
-          <Badge className="label-caps text-[0.5625rem]" variant="outline">
-            {posting.location}
-          </Badge>
-        </div>
-        <h1 className="mt-5 max-w-3xl text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">
-          {posting.title}
-        </h1>
-        {posting.summary && (
-          <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
-            {posting.summary}
-          </p>
-        )}
-        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2.5 text-xs text-muted-foreground">
-          {posting.postedAt && (
-            <span className="inline-flex items-center gap-1.5">
-              <CalendarDays aria-hidden="true" className="size-3.5" />
-              Posted {formatDate(posting.postedAt)}
-            </span>
+      <div className="wrap grid items-start gap-10 py-12 md:py-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:gap-14">
+        <div className="flex min-w-0 flex-col gap-10">
+          {job.description && (
+            <section aria-labelledby="job-about" className="reveal flex flex-col gap-4">
+              <h2 className="text-2xl font-semibold tracking-tight" id="job-about">About the role</h2>
+              <RichText className="text-muted-foreground" text={job.description} />
+            </section>
           )}
-          {posting.deadline && (
-            <span className="inline-flex items-center gap-1.5">
-              <CalendarDays aria-hidden="true" className="size-3.5" />
-              {open ? "Apply by" : "Closed"} {formatDate(posting.deadline)}
-            </span>
-          )}
-          {posting.salary && (
-            <span className="inline-flex items-center gap-1.5">
-              <Wallet aria-hidden="true" className="size-3.5" />
-              {posting.salary}
-            </span>
-          )}
-          <span className="inline-flex items-center gap-1.5">
-            <MapPin aria-hidden="true" className="size-3.5" />
-            {posting.location}
-          </span>
-        </div>
-        {wingLinks.length > 0 && (
-          <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-            Research group:
-            {wingLinks.map((wing) => (
-              <Link
-                className="font-semibold text-brand hover:underline"
-                href={`/wings/${wing.slug}`}
-                key={wing.slug}
-              >
-                {wing.title}
-              </Link>
-            ))}
-          </p>
-        )}
-      </header>
-
-      <div className="mt-8 flex max-w-3xl flex-col gap-10">
-        {posting.description && (
-          <section>
-            <h2 className="text-lg font-extrabold tracking-[-0.02em]">
-              About the <Accent>role.</Accent>
-            </h2>
-            <RichText className="mt-4" text={posting.description} />
-          </section>
-        )}
-
-        {Array.isArray(posting.requirements) &&
-          posting.requirements.length > 0 && (
-            <section>
-              <h2 className="text-lg font-extrabold tracking-[-0.02em]">
-                What we are <Accent>looking for.</Accent>
-              </h2>
-              <ul className="mt-4 flex flex-col gap-2.5">
-                {posting.requirements.map((requirement) => (
-                  <li
-                    className="flex gap-3 leading-relaxed text-muted-foreground"
-                    key={requirement}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="mt-2 size-1.5 shrink-0 rounded-full bg-brand"
-                    />
+          {job.requirements?.length > 0 && (
+            <section aria-labelledby="job-requirements" className="reveal flex flex-col gap-4">
+              <h2 className="text-2xl font-semibold tracking-tight" id="job-requirements">What we are looking for</h2>
+              <ul className="flex flex-col gap-3">
+                {job.requirements.map((requirement) => (
+                  <li className="flex gap-3 leading-relaxed text-muted-foreground" key={requirement}>
+                    <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-brand" />
                     {requirement}
                   </li>
                 ))}
               </ul>
             </section>
           )}
+        </div>
 
-        <section>
-          <h2 className="text-lg font-extrabold tracking-[-0.02em]">
-            How to <Accent>apply.</Accent>
-          </h2>
-          {posting.applyInfo && (
-            <RichText className="mt-4" text={posting.applyInfo} />
-          )}
-          {open ? (
-            <>
-              <ApplyForm jobSlug={posting.slug} />
-              <p className="mt-3 text-xs text-muted-foreground">
-                Prefer email? Write to{" "}
-                <a
-                  className="font-semibold text-brand hover:underline"
-                  href={`mailto:coinlab@seu.edu.bd?subject=${applySubject}`}
-                >
-                  coinlab@seu.edu.bd
-                </a>{" "}
-                with the job title in the subject line.
-              </p>
-            </>
-          ) : (
-            <Card className="mt-5 bg-accent py-0">
-              <CardContent className="p-4 text-sm text-muted-foreground">
-                This position is no longer accepting applications. Keep an eye
-                on the{" "}
-                <Link className="font-semibold text-brand" href="/jobs">
-                  open positions
-                </Link>{" "}
-                page for new roles.
-              </CardContent>
-            </Card>
-          )}
-        </section>
+        <Card className="bezel reveal rounded-3xl lg:sticky lg:top-28" id="apply">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold tracking-tight">How to apply</CardTitle>
+            {job.applyInfo && <CardDescription><RichText className="text-sm" text={job.applyInfo} /></CardDescription>}
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {open ? (
+              <>
+                <ApplyForm jobSlug={job.slug} />
+                <p className="text-xs text-muted-foreground">
+                  Prefer email? Write to <a className="font-medium text-foreground underline underline-offset-4 hover:text-brand" href={mailto}>coinlab@seu.edu.bd</a> with the job title in the subject line.
+                </p>
+              </>
+            ) : (
+              <Alert>
+                <AlertTitle>This position is closed</AlertTitle>
+                <AlertDescription>
+                  It is no longer accepting applications. See the <Link href="/jobs">open positions</Link> for new roles.
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,126 +1,66 @@
+import { Fragment } from "react";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  BrainCircuit,
-  ChevronRight,
-  FlaskConical,
-  Network,
-  Sparkles,
-  Sprout,
-} from "lucide-react";
-import HeroSlideshow from "@/components/site/hero-slideshow";
-import { Accent } from "@/components/site/typography";
+import { LazyParticles } from "@/components/home/lazy";
+import MottoDiagram from "@/components/home/motto-diagram";
+import { ArrowBadge, Chip, Highlight, Scribble } from "@/components/site/typography";
 import { Button } from "@/components/ui/button";
 
-const nodes = [
-  {
-    label: "NETWORKS",
-    icon: Network,
-    position: "left-0 top-[26%] sm:left-[2%]",
-    line: "left-[15%] top-[33%] w-[30%] rotate-[19deg]",
-  },
-  {
-    label: "LANGUAGE",
-    icon: Sparkles,
-    position: "right-0 top-[31%]",
-    line: "right-[17%] top-[36%] w-[26%] rotate-[155deg]",
-  },
-  {
-    label: "DISCOVERY",
-    icon: FlaskConical,
-    position: "left-0 bottom-[17%] sm:left-[4%]",
-    line: "left-[16%] bottom-[27%] w-[29%] -rotate-[10deg]",
-  },
-  {
-    label: "IMPACT",
-    icon: Sprout,
-    position: "right-0 bottom-[15%] sm:right-[5%]",
-    line: "right-[18%] bottom-[26%] w-[28%] rotate-[166deg]",
-  },
+// The fields named in the motto, matched to CMS wings by a slug keyword.
+const FIELDS = [
+  { word: "health", label: "Health", key: "health" },
+  { word: "finance", label: "Finance", key: "financ" },
+  { word: "security", label: "Security", key: "security" },
+  { word: "language", label: "Language", key: "language" },
+  { word: "agriculture", label: "Agriculture", key: "agricultur" },
 ];
 
-// Decorative orbit diagram shown until hero photos are added in the CMS.
-function HeroDiagram() {
-  return (
-    <div aria-hidden="true" className="absolute inset-0">
-      <div className="absolute top-1/2 left-1/2 h-[66%] w-[min(94%,490px)] -translate-1/2 -rotate-[28deg] rounded-full border border-sky/40" />
-      <div className="absolute top-1/2 left-1/2 h-[86%] w-3/4 -translate-1/2 rotate-[43deg] rounded-full border border-sky/20" />
-      <div className="label-caps absolute top-[5%] right-[2%] text-right text-[0.5625rem] text-navy-foreground/70">
-        COMPUTATIONAL
-        <br />
-        INTELLIGENCE
-      </div>
-      <div className="absolute top-1/2 left-1/2 z-10 flex size-[122px] -translate-1/2 flex-col items-center justify-center gap-2 rounded-full bg-[radial-gradient(circle_at_35%_30%,var(--brand),#15204e_70%)] text-sky shadow-[0_0_0_14px_rgb(156_205_238/0.06),0_0_80px_rgb(159_208_240/0.25)] sm:size-[168px]">
-        <BrainCircuit className="size-9 sm:size-13" />
-        <span className="text-center font-mono text-xs leading-tight tracking-[0.18em]">
-          COiN
-          <br />
-          <small className="text-[0.5rem] text-white">LAB</small>
-        </span>
-      </div>
-      {nodes.map(({ label, icon: Icon, position, line }) => (
-        <div key={label}>
-          <div
-            className={`absolute z-10 flex items-center gap-1.5 font-mono text-[0.4375rem] tracking-[0.08em] text-navy-foreground sm:gap-2 sm:text-[0.5625rem] ${position}`}
-          >
-            <Icon className="size-4 sm:size-[19px]" />
-            <span>{label}</span>
-          </div>
-          <div className={`absolute h-px origin-left bg-sky/40 ${line}`} />
-        </div>
-      ))}
-    </div>
-  );
-}
+const mottoLink = "font-medium text-foreground transition-colors hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring";
 
-export default function Hero({ slides }) {
+/**
+ * Opens with the lab motto. Each field in the sentence links to its research
+ * wing and is underlined by a pen stroke; the diagram beside it draws the
+ * same idea.
+ */
+export default function Hero({ wings }) {
+  const fields = FIELDS.map((field) => {
+    const wing = wings.find((item) => item.slug.includes(field.key));
+    return { ...field, slug: wing?.slug, href: wing ? `/wings/${wing.slug}` : "/wings" };
+  });
+
   return (
-    <section className="relative overflow-hidden bg-navy text-white">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(30deg,transparent_48%,#9fd0f0_49%,transparent_50%),linear-gradient(150deg,transparent_48%,#4a5fb8_49%,transparent_50%)] bg-size-[84px_84px] opacity-15 mask-[linear-gradient(90deg,#000,transparent_85%)]"
-      />
-      <div className="wrap relative grid items-center gap-6 pt-12 pb-4 md:min-h-[620px] md:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)] md:gap-8 md:py-16 lg:gap-10">
-        <div className="*:animate-fade-up motion-reduce:*:animate-none">
-          <p className="label-caps flex items-center gap-2.5 text-[#a9bce4]">
-            <span aria-hidden="true" className="size-2 rounded-full bg-sky" />
-            SOUTHEAST UNIVERSITY · EST. 2025
-          </p>
-          <h1 className="my-6 text-[clamp(2.75rem,13vw,4.75rem)] leading-[0.92] font-extrabold tracking-[-0.075em] [animation-delay:90ms] md:my-7 md:text-[clamp(3.25rem,7.4vw,6.5rem)]">
-            Research with
-            <br />
-            <Accent className="text-sky">consequence.</Accent>
+    <section className="relative isolate overflow-hidden pt-32 pb-16 md:pt-40 md:pb-24">
+      <div aria-hidden="true" className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 dot-grid mask-[radial-gradient(ellipse_at_top,black,transparent_70%)]" />
+        <div className="absolute -top-40 left-1/3 size-[640px] -translate-x-1/2 rounded-full bg-brand/15 blur-[130px]" />
+        <LazyParticles className="absolute inset-0 hidden dark:block" color="#7db8ff" quantity={70} size={0.5} staticity={40} />
+      </div>
+
+      <div className="wrap grid items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-8">
+        <div className="flex flex-col items-start gap-6 *:animate-fade-up">
+          <Chip dot>Computational Intelligence Lab<span className="max-sm:hidden"> · Southeast University</span></Chip>
+          <h1 className="text-[clamp(2.5rem,5.6vw+0.5rem,4.75rem)] leading-[1.03] font-bold tracking-[-0.05em] text-balance [animation-delay:80ms]">
+            Computational intelligence, in contact with <Scribble delay={900}><Highlight>real questions.</Highlight></Scribble>
           </h1>
-          <p className="mb-8 max-w-[510px] text-sm leading-[1.8] text-navy-foreground [animation-delay:180ms] md:text-[15px]">
-            COiN Lab brings computational intelligence into contact with real
-            questions—health, finance, security, language, agriculture, and the
-            people living through them.
+          <p className="max-w-[600px] text-base leading-[1.85] text-pretty text-muted-foreground [animation-delay:160ms] md:text-lg">
+            COiN Lab brings computational intelligence into contact with real questions—
+            {fields.map((field, i) => (
+              <Fragment key={field.word}>
+                <Link className={mottoLink} href={field.href}><Scribble delay={1300 + i * 180}>{field.word}</Scribble></Link>
+                {", "}
+              </Fragment>
+            ))}
+            and the <Link className={mottoLink} href="/people"><Scribble delay={1300 + fields.length * 180}>people</Scribble></Link> living through them.
           </p>
-          <div className="flex flex-col items-start gap-3 [animation-delay:270ms] sm:flex-row sm:items-center sm:gap-4">
-            <Button asChild size="xl" variant="secondary">
-              <Link href="/wings">
-                Explore our wings <ArrowUpRight data-icon="inline-end" />
-              </Link>
+          <div className="flex flex-wrap items-center gap-3 [animation-delay:240ms]">
+            <Button asChild size="xl" variant="glow">
+              <Link href="/papers">Read our research <ArrowBadge /></Link>
             </Button>
-            <Button
-              asChild
-              className="text-navy-foreground hover:bg-white/10 hover:text-white"
-              size="xl"
-              variant="ghost"
-            >
-              <Link href="/people">
-                Meet the people <ChevronRight data-icon="inline-end" />
-              </Link>
+            <Button asChild size="xl" variant="outline">
+              <Link href="/people">Meet the lab <ArrowBadge /></Link>
             </Button>
           </div>
         </div>
-        <div className="relative mx-auto h-[clamp(260px,70vw,370px)] w-full max-w-[560px] animate-fade-up [animation-delay:200ms] motion-reduce:animate-none md:h-[480px]">
-          {slides.length ? <HeroSlideshow slides={slides} /> : <HeroDiagram />}
-        </div>
-      </div>
-      <div className="wrap label-caps relative flex justify-between gap-3 pb-6 text-[0.5rem] text-navy-foreground/55 sm:text-[0.5625rem]">
-        <span>BUILDING RESPONSIBLE INTELLIGENCE</span>
-        <span>↓ Scroll to explore</span>
+        <MottoDiagram fields={[...fields.map(({ label, href, slug }) => ({ label, href, slug })), { label: "People", href: "/people" }]} />
       </div>
     </section>
   );

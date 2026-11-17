@@ -1,12 +1,7 @@
-// Fonts are bundled from @fontsource (self-hosted, no request to Google at
-// build time or in the browser).
 import "./globals.css";
-import "@fontsource-variable/manrope";
-import "@fontsource-variable/playfair-display";
-import "@fontsource/dm-mono/400.css";
-import "@fontsource/dm-mono/500.css";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
+import { ThemeProvider } from "next-themes";
 
 export const metadata = {
   title: {
@@ -14,21 +9,27 @@ export const metadata = {
     template: "%s | COiN Lab",
   },
   description:
-    "A research community advancing responsible computational intelligence at Southeast University.",
+    "COiN Lab is the Computational Intelligence Lab at Southeast University, Dhaka — research in AI for healthcare, finance, networks and security, agriculture, and language.",
 };
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0e1b40",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f8fc" },
+    { media: "(prefers-color-scheme: dark)", color: "#05070c" },
+  ],
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    // next-themes sets the `dark` class before paint, so the server and
+    // client <html> attributes differ by design.
+    <html className={`${GeistSans.variable} ${GeistMono.variable}`} lang="en" suppressHydrationWarning>
       <body>
-        <TooltipProvider>{children}</TooltipProvider>
-        <Toaster position="bottom-right" />
+        <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

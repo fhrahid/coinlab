@@ -8,7 +8,8 @@ import MessagesView from "@/components/admin/messages-view";
 import RecordForm from "@/components/admin/record-form";
 import RecordList from "@/components/admin/record-list";
 import SettingsDialog from "@/components/admin/settings-dialog";
-import { Eyebrow } from "@/components/site/typography";
+import ThemeToggle from "@/components/site/theme-toggle";
+import { Chip } from "@/components/site/typography";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -25,6 +26,7 @@ export default function CmsShell({ onSignedOut }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [wingOptions, setWingOptions] = useState([]);
+  const [roleOptions, setRoleOptions] = useState([]);
   const [messages, setMessages] = useState([]);
   const [applications, setApplications] = useState([]);
   const [editing, setEditing] = useState(null);
@@ -41,6 +43,11 @@ export default function CmsShell({ onSignedOut }) {
   const loadApplications = useCallback(async () => {
     const { ok, data } = await api("/api/applications");
     if (ok && Array.isArray(data)) setApplications(data);
+  }, []);
+
+  const loadRoleOptions = useCallback(async () => {
+    const { ok, data } = await api("/api/content?collection=roles");
+    if (ok && Array.isArray(data)) setRoleOptions(data);
   }, []);
 
   const loadWingOptions = useCallback(async () => {
@@ -71,9 +78,16 @@ export default function CmsShell({ onSignedOut }) {
   useEffect(() => {
     loadItems("wings");
     loadWingOptions();
+    loadRoleOptions();
     loadMessages();
     loadApplications();
-  }, [loadItems, loadWingOptions, loadMessages, loadApplications]);
+  }, [
+    loadItems,
+    loadWingOptions,
+    loadRoleOptions,
+    loadMessages,
+    loadApplications,
+  ]);
 
   const startNew = () => {
     setEditing(null);
@@ -106,6 +120,8 @@ export default function CmsShell({ onSignedOut }) {
     startNew();
     await loadItems(view);
     if (view === "wings") loadWingOptions();
+    // People pick their role from this list, so keep it current.
+    if (view === "roles") loadRoleOptions();
   };
 
   const signOut = async (message) => {
@@ -116,6 +132,7 @@ export default function CmsShell({ onSignedOut }) {
 
   const isMessages = view === "messages";
   const isApplications = view === "applications";
+  const isInbox = isMessages || isApplications;
   const title = isMessages
     ? "Messages"
     : isApplications
@@ -133,14 +150,14 @@ export default function CmsShell({ onSignedOut }) {
         unreadApplications={applications.filter((a) => !a.read).length}
         view={view}
       />
-      <SidebarInset className="min-w-0 bg-[#eef1f9]">
+      <SidebarInset className="min-w-0 bg-muted/40">
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background/95 px-3 backdrop-blur-sm sm:px-5">
           <SidebarTrigger className="size-10" />
           <Separator className="mr-1 h-5!" orientation="vertical" />
-          <span className="truncate text-sm font-bold">{title}</span>
-          {!isMessages && !isApplications && (
+          <span className="mr-auto truncate text-sm font-bold">{title}</span>
+          <ThemeToggle />
+          {!isInbox && (
             <Button
-              className="ml-auto"
               onClick={startNew}
               size="lg"
               variant="secondary"
@@ -151,7 +168,7 @@ export default function CmsShell({ onSignedOut }) {
         </header>
         <div className="flex-1 px-3 py-5 sm:px-5 md:py-8 lg:px-10">
           <div className="mb-5 md:mb-6">
-            <Eyebrow>Content studio</Eyebrow>
+            <Chip dot>Content studio</Chip>
             <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.06em] md:text-4xl">
               {title}
             </h1>
@@ -182,6 +199,7 @@ export default function CmsShell({ onSignedOut }) {
                   key={`${view}-${formKey}`}
                   onChanged={refresh}
                   record={editing}
+                  roleOptions={roleOptions}
                   wingOptions={wingOptions}
                 />
               </div>

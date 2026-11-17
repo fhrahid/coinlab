@@ -1,34 +1,43 @@
-"use client";
+"use client"
 
+import { useTheme } from "next-themes"
 import { Toaster as Sonner } from "sonner";
-import {
-  CircleCheckIcon,
-  InfoIcon,
-  TriangleAlertIcon,
-  OctagonXIcon,
-  Loader2Icon,
-} from "lucide-react";
+import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
-// The site has a single (light) theme, so the next-themes lookup that ships
-// with the stock component is not needed.
-const Toaster = ({ ...props }) => {
+const Toaster = ({
+  ...props
+}) => {
+  const { theme = "system" } = useTheme()
+
   return (
     <Sonner
-      theme="light"
+      theme={theme}
       className="toaster group"
       icons={{
-        success: <CircleCheckIcon className="size-4" />,
-        info: <InfoIcon className="size-4" />,
-        warning: <TriangleAlertIcon className="size-4" />,
-        error: <OctagonXIcon className="size-4" />,
-        loading: <Loader2Icon className="size-4 animate-spin" />,
+        success: (
+          <CircleCheckIcon className="size-4" />
+        ),
+        info: (
+          <InfoIcon className="size-4" />
+        ),
+        warning: (
+          <TriangleAlertIcon className="size-4" />
+        ),
+        error: (
+          <OctagonXIcon className="size-4" />
+        ),
+        loading: (
+          <Loader2Icon className="size-4 animate-spin" />
+        ),
       }}
-      style={{
-        "--normal-bg": "var(--popover)",
-        "--normal-text": "var(--popover-foreground)",
-        "--normal-border": "var(--border)",
-        "--border-radius": "var(--radius)",
-      }}
+      style={
+        {
+          "--normal-bg": "var(--popover)",
+          "--normal-text": "var(--popover-foreground)",
+          "--normal-border": "var(--border)",
+          "--border-radius": "var(--radius)"
+        }
+      }
       toastOptions={{
         classNames: {
           toast: "cn-toast",
@@ -37,6 +46,6 @@ const Toaster = ({ ...props }) => {
       {...props}
     />
   );
-};
+}
 
-export { Toaster };
+export { Toaster }
