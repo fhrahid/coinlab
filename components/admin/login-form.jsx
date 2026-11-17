@@ -39,10 +39,10 @@ export default function LoginForm({ notice = "", onSignedIn }) {
         <CardContent className="flex flex-col">
           <img
             alt="COiN Lab"
-            className="mb-7 size-12 rounded-full bg-white object-contain p-0.5"
+            className="mb-7 h-12 w-44 object-contain object-left"
             height={48}
-            src="/coinlab-logo.jpg"
-            width={48}
+            src="/logo.svg"
+            width={176}
           />
           <Eyebrow>Content studio</Eyebrow>
           <h1 className="my-3 text-[42px] leading-[0.95] font-extrabold tracking-[-0.07em] sm:text-5xl">

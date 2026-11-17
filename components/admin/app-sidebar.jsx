@@ -57,11 +57,11 @@ export default function AppSidebar({
       <SidebarHeader className="px-4 pt-5 pb-3">
         <div className="flex items-center gap-2.5 text-white">
           <img
-            alt=""
-            className="size-9 rounded-full bg-white object-contain p-0.5"
+            alt="COiN Lab"
+            className="h-9 w-32 shrink-0 rounded bg-white p-1 object-contain object-left"
             height={36}
-            src="/coinlab-logo.jpg"
-            width={36}
+            src="/logo.svg"
+            width={128}
           />
           <strong className="text-sm tracking-[0.04em]">COiN CMS</strong>
         </div>

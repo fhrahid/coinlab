@@ -10,20 +10,12 @@ export default function SiteFooter() {
       <div className="wrap grid grid-cols-2 gap-x-5 gap-y-8 pb-11 md:grid-cols-[2fr_0.7fr_1fr] md:gap-9">
         <div className="col-span-2 flex items-center gap-3 md:col-span-1">
           <img
-            alt="COiN Lab logo"
-            className="size-11 shrink-0 rounded-full bg-white object-contain p-0.5"
+            alt="COiN Lab"
+            className="h-11 w-44 shrink-0 rounded bg-white p-1 object-contain object-left"
             height={44}
-            src="/coinlab-logo.jpg"
-            width={44}
+            src="/logo.svg"
+            width={176}
           />
-          <div>
-            <strong className="text-[15px] tracking-[0.08em]">COiN Lab</strong>
-            <p className="text-xs leading-relaxed text-navy-foreground/80">
-              Computational Intelligence Lab
-              <br />
-              Southeast University, Dhaka
-            </p>
-          </div>
         </div>
         <nav aria-label="Explore" className="flex flex-col gap-1">
           <span className="label-caps mb-2 text-navy-foreground/70">

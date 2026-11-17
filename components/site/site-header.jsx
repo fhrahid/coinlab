@@ -46,20 +46,12 @@ export default function SiteHeader({ wings = [] }) {
           href="/"
         >
           <img
-            alt="COiN Lab logo"
-            className="size-9 shrink-0 rounded-full bg-white object-contain p-0.5 lg:size-[42px]"
-            height={42}
-            src="/coinlab-logo.jpg"
-            width={42}
+            alt="COiN Lab"
+            className="h-9 w-36 shrink-0 object-contain object-left lg:h-11 lg:w-44"
+            height={44}
+            src="/logo.svg"
+            width={176}
           />
-          <span className="min-w-0">
-            <b className="block text-[15px] leading-tight font-extrabold tracking-[0.11em] lg:text-[17px]">
-              COiN LAB
-            </b>
-            <small className="block truncate font-mono text-[0.5625rem] tracking-[0.02em] text-muted-foreground">
-              SOUTHEAST UNIVERSITY
-            </small>
-          </span>
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
@@ -136,8 +128,14 @@ export default function SiteHeader({ wings = [] }) {
             side="right"
           >
             <SheetHeader className="border-b">
-              <SheetTitle className="text-base font-extrabold tracking-[0.08em]">
-                COiN LAB
+              <SheetTitle>
+                <img
+                  alt="COiN Lab"
+                  className="h-8 w-32 object-contain object-left"
+                  height={32}
+                  src="/logo.svg"
+                  width={128}
+                />
               </SheetTitle>
               <SheetDescription>
                 Computational Intelligence Lab
