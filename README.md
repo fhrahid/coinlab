@@ -9,11 +9,32 @@
 - MongoDB-backed content APIs with seed-content fallback for local development.
 - Cloudinary signed-upload endpoint at `/api/uploads`.
 
+## Stack and structure
+
+Next.js 15 (App Router, React 19) · Tailwind CSS v4 · shadcn/ui (Radix base, `radix-lyra` style, lucide icons) · MongoDB · Cloudinary.
+
+```
+app/
+  layout.jsx          root layout: fonts, toaster, tooltip provider
+  globals.css         Tailwind + design tokens (brand palette mapped onto shadcn variables)
+  (site)/             public pages; layout.jsx adds the shared header and footer
+  admin/              CMS entry (session gate)
+  api/                route handlers
+components/
+  ui/                 shadcn components (add more with: pnpm dlx shadcn@latest add <name>)
+  site/               header, footer, typography and other shared public pieces
+  home/               homepage sections
+  admin/              CMS: sidebar, record list/form, slide editor, inbox, settings
+lib/                  data access, auth, Cloudinary, and client-safe helpers
+```
+
+Styling rules: use the semantic tokens from `app/globals.css` (`bg-primary`, `text-muted-foreground`, `text-brand`, `bg-navy`…) rather than raw colours, and reach for a `components/ui` component before writing custom markup. Brand colours and fonts are changed in one place: the `:root` block of `app/globals.css`.
+
 ## Local setup
 
 1. Copy `.env.example` to `.env.local`.
 2. Add a MongoDB Atlas connection string and a long `ADMIN_PASSWORD`.
-3. Run `npm install` and `npm run dev`.
+3. Run `pnpm install` and `pnpm dev`.
 4. Open `http://localhost:3000/admin` to manage content.
 
 Without `MONGODB_URI`, the public site uses the seed records in `lib/content.js`; the CMS stays read-only and explains that MongoDB must be connected before publishing.

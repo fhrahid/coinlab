@@ -1,0 +1,147 @@
+"use client";
+import { ChevronRight, Inbox } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import { Skeleton } from "@/components/ui/skeleton";
+import { collections } from "@/lib/collections";
+import { initials, slideDeliveryUrl } from "@/lib/media";
+import { cn } from "@/lib/utils";
+
+const markClass =
+  "flex size-9 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-[0.5625rem] text-brand";
+
+function Mark({ collection, item }) {
+  if (collection === "slides") {
+    return (
+      <span
+        aria-hidden="true"
+        className="h-9 w-12 shrink-0 bg-muted bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${slideDeliveryUrl(item.image, item.transform, { w: 120, h: 80 })})`,
+        }}
+      />
+    );
+  }
+  const text =
+    collection === "wings"
+      ? item.number
+      : collection === "papers"
+        ? item.year
+        : collection === "partners"
+          ? item.abbr
+          : initials(item.name);
+  return (
+    <span aria-hidden="true" className={markClass}>
+      {text}
+    </span>
+  );
+}
+
+const describe = (collection, item) =>
+  collection === "slides"
+    ? {
+        title: item.caption || "Untitled slide",
+        detail: `${item.active === false ? "Hidden" : "Live"} · order ${item.number || "–"}`,
+      }
+    : {
+        title: item.title || item.name,
+        detail: item.shortTitle || item.role || item.venue || item.abbr,
+      };
+
+export default function RecordList({
+  collection,
+  items,
+  loading,
+  selectedSlug,
+  onSelect,
+  className,
+}) {
+  const noun = collection === "slides" ? "slides" : "records";
+  return (
+    <Card className={cn("gap-0 py-0", className)}>
+      <CardHeader className="label-caps flex items-center justify-between border-b py-3.5 text-[0.5625rem] text-muted-foreground">
+        <span>{loading ? "Loading…" : `${items.length} ${noun}`}</span>
+        <span>Select to edit</span>
+      </CardHeader>
+      <CardContent className="max-h-[420px] overflow-y-auto px-0 lg:max-h-[calc(100svh-15rem)]">
+        {loading ? (
+          <div className="flex flex-col gap-3 p-4">
+            {[0, 1, 2, 3].map((row) => (
+              <Skeleton className="h-9 w-full" key={row} />
+            ))}
+          </div>
+        ) : items.length ? (
+          <ul>
+            {items.map((item) => {
+              const { title, detail } = describe(collection, item);
+              return (
+                <li className="border-b last:border-b-0" key={item.slug}>
+                  <Item
+                    asChild
+                    className={cn(
+                      "cursor-pointer border-0 px-3.5 py-3 text-left hover:bg-muted focus-visible:bg-muted focus-visible:ring-0",
+                      selectedSlug === item.slug && "bg-accent",
+                    )}
+                  >
+                    <button
+                      aria-current={selectedSlug === item.slug || undefined}
+                      onClick={() => onSelect(item)}
+                      type="button"
+                    >
+                      <ItemMedia>
+                        <Mark collection={collection} item={item} />
+                      </ItemMedia>
+                      <ItemContent className="min-w-0 gap-0.5">
+                        <ItemTitle className="block w-full truncate font-bold">
+                          {title}
+                        </ItemTitle>
+                        {detail && (
+                          <ItemDescription className="line-clamp-1">
+                            {detail}
+                          </ItemDescription>
+                        )}
+                      </ItemContent>
+                      <ItemActions>
+                        <ChevronRight
+                          aria-hidden="true"
+                          className="size-4 text-muted-foreground"
+                        />
+                      </ItemActions>
+                    </button>
+                  </Item>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Inbox />
+              </EmptyMedia>
+              <EmptyTitle>No {noun} yet</EmptyTitle>
+              <EmptyDescription>
+                Fill in the form and save to add the first{" "}
+                {collections[collection].singular}.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
