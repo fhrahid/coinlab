@@ -19,6 +19,11 @@ export const metadata = { title: "People" };
 
 // Photo and card sizes step down with each tier of the hierarchy.
 const tierSizes = {
+  founders: {
+    card: "w-[160px] sm:w-[216px]",
+    photo: "size-[144px] sm:size-48",
+    initials: "text-[30px] sm:text-[38px]",
+  },
   leadership: {
     card: "w-[150px] sm:w-[200px]",
     photo: "size-[132px] sm:size-44",
