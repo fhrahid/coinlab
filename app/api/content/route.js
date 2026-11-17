@@ -50,6 +50,23 @@ const schema = {
     fields: ["caption", "number", "image", "active", "transform"],
     media: ["image"],
   },
+  jobs: {
+    fields: [
+      "title",
+      "type",
+      "location",
+      "deadline",
+      "salary",
+      "summary",
+      "description",
+      "requirements",
+      "applyInfo",
+      "wingSlugs",
+      "active",
+      "postedAt",
+    ],
+    media: [],
+  },
 };
 
 const list = (value, separator) =>
@@ -95,12 +112,24 @@ export async function POST(request) {
     if (body[key] !== undefined) record[key] = body[key];
   if ("focusPoints" in record)
     record.focusPoints = list(record.focusPoints, "\n");
+  if ("requirements" in record)
+    record.requirements = list(record.requirements, "\n");
   if ("authors" in record) record.authors = list(record.authors, ",");
   if ("wingSlugs" in record) record.wingSlugs = list(record.wingSlugs, ",");
   if ("year" in record)
     record.year = Number(record.year) || new Date().getFullYear();
   if ("active" in record) record.active = record.active !== false;
+  if (
+    "deadline" in record &&
+    !/^\d{4}-\d{2}-\d{2}$/.test(record.deadline || "")
+  )
+    record.deadline = "";
   if (collection === "people") record.type = roleType(record.role);
+  if (collection === "jobs")
+    record.postedAt =
+      record.postedAt && !Number.isNaN(new Date(record.postedAt))
+        ? new Date(record.postedAt)
+        : new Date();
   for (const [key, value] of Object.entries(record))
     if (typeof value === "string") record[key] = value.trim();
 

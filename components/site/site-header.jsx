@@ -27,6 +27,7 @@ const links = [
   { href: "/wings", label: "Research wings", hasMenu: true },
   { href: "/people", label: "People" },
   { href: "/papers", label: "Papers" },
+  { href: "/jobs", label: "Jobs" },
 ];
 
 const mobileLink =

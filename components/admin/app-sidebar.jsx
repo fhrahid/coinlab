@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import {
+  Briefcase,
   ExternalLink,
   FileText,
   Handshake,
@@ -33,6 +34,7 @@ const icons = {
   papers: FileText,
   partners: Handshake,
   slides: Images,
+  jobs: Briefcase,
 };
 const badgeClass =
   "font-mono text-[0.625rem] peer-data-active/menu-button:text-sidebar-accent-foreground";

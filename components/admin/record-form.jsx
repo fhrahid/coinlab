@@ -36,9 +36,16 @@ import {
 } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
 import { api } from "@/lib/api";
 import { slugify } from "@/lib/citation";
-import { collections, recordTitle, toFormRecord } from "@/lib/collections";
+import {
+  collections,
+  jobLocations,
+  jobTypes,
+  recordTitle,
+  toFormRecord,
+} from "@/lib/collections";
 import { labRoles } from "@/lib/roles";
 
 // Editor for one record. The parent remounts it (via `key`) whenever another
@@ -282,7 +289,88 @@ export default function RecordForm({
               </>
             )}
 
-            {collection !== "slides" && (
+            {collection === "jobs" && (
+              <>
+                {field("title", {
+                  placeholder: "e.g. Research Assistant — AI in Healthcare",
+                  className: "sm:col-span-2",
+                })}
+                <SelectField
+                  name="type"
+                  label="Employment type"
+                  onChange={(value) => update("type", value)}
+                  options={jobTypes}
+                  value={form.type || jobTypes[0]}
+                />
+                <SelectField
+                  name="location"
+                  onChange={(value) => update("location", value)}
+                  options={jobLocations}
+                  value={form.location || jobLocations[0]}
+                />
+                {field("deadline", {
+                  label: "Application deadline",
+                  placeholder: "",
+                  type: "date",
+                })}
+                {field("salary", {
+                  label: "Salary / support",
+                  placeholder: "Optional, e.g. BDT 25,000–35,000 per month",
+                })}
+                {field("slug", {
+                  placeholder: "Auto-generated from title if left blank",
+                  className: "sm:col-span-2",
+                })}
+                {field("summary", {
+                  rows: 2,
+                  placeholder:
+                    "One or two sentences shown on the job card in the listing",
+                })}
+                <BioEditor
+                  label="Description"
+                  name="description"
+                  placeholder="About the role — what the person will do and why it matters. The toolbar adds headings, bold, italic, lists and links."
+                  onChange={(value) => update("description", value)}
+                  value={form.description}
+                />
+                {field("requirements", {
+                  rows: 5,
+                  placeholder:
+                    "One requirement per line, e.g.\nBSc in CSE or a related field\nExperience with Python and PyTorch",
+                })}
+                {field("applyInfo", {
+                  label: "How to apply",
+                  rows: 3,
+                  placeholder:
+                    "e.g. Email your CV and a short cover letter to coinlab@seu.edu.bd with the job title in the subject line.",
+                })}
+                <WingPicker
+                  onChange={(value) => update("wingSlugs", value)}
+                  value={form.wingSlugs}
+                  wings={wingOptions}
+                />
+                <div className="flex items-center gap-3 sm:col-span-2">
+                  <Switch
+                    aria-label="Accepting applications"
+                    checked={form.active !== false}
+                    id="field-job-active"
+                    onCheckedChange={(value) => update("active", value)}
+                  />
+                  <label
+                    className="text-sm font-medium"
+                    htmlFor="field-job-active"
+                  >
+                    Accepting applications
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      Turn off to mark the posting as closed without deleting
+                      it.
+                    </span>
+                  </label>
+                </div>
+              </>
+            )}
+
+            {collection !== "slides" && collection !== "jobs" && (
               <div className="flex flex-col gap-4 sm:col-span-2">
                 <MediaField
                   accept={config.accept}

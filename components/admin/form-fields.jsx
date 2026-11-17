@@ -149,7 +149,14 @@ const bioTools = [
 ];
 
 // Markdown textarea with a formatting toolbar and a live preview.
-export function BioEditor({ value = "", onChange }) {
+export function BioEditor({
+  value = "",
+  onChange,
+  label = "Bio",
+  name = "bio",
+  placeholder = "Short research biography — use the toolbar for headings, bold, italic, lists and links",
+  rows = 7,
+}) {
   const ref = useRef(null);
   const focusAt = (caret) =>
     requestAnimationFrame(() => {
@@ -186,7 +193,7 @@ export function BioEditor({ value = "", onChange }) {
 
   return (
     <Field className="sm:col-span-2">
-      <FieldLabel htmlFor="field-bio">Bio</FieldLabel>
+      <FieldLabel htmlFor={`field-${name}`}>{label}</FieldLabel>
       <div
         aria-label="Formatting"
         className="flex flex-wrap gap-1.5"
@@ -210,11 +217,11 @@ export function BioEditor({ value = "", onChange }) {
         ))}
       </div>
       <Textarea
-        id="field-bio"
+        id={`field-${name}`}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Short research biography — use the toolbar for headings, bold, italic, lists and links"
+        placeholder={placeholder}
         ref={ref}
-        rows={7}
+        rows={rows}
         value={value}
       />
       {value && (

@@ -1,5 +1,5 @@
 "use client";
-import { ChevronRight, Inbox } from "lucide-react";
+import { Briefcase, ChevronRight, Inbox } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Empty,
@@ -36,6 +36,13 @@ function Mark({ collection, item }) {
       />
     );
   }
+  if (collection === "jobs") {
+    return (
+      <span aria-hidden="true" className={markClass}>
+        <Briefcase className="size-3.5" />
+      </span>
+    );
+  }
   const text =
     collection === "wings"
       ? item.number
@@ -57,10 +64,19 @@ const describe = (collection, item) =>
         title: item.caption || "Untitled slide",
         detail: `${item.active === false ? "Hidden" : "Live"} · order ${item.number || "–"}`,
       }
-    : {
-        title: item.title || item.name,
-        detail: item.shortTitle || item.role || item.venue || item.abbr,
-      };
+    : collection === "jobs"
+      ? {
+          title: item.title,
+          detail: `${item.active === false || jobClosed(item) ? "Closed" : "Open"} · ${item.type || "Job"}${item.deadline ? ` · by ${item.deadline}` : ""}`,
+        }
+      : {
+          title: item.title || item.name,
+          detail: item.shortTitle || item.role || item.venue || item.abbr,
+        };
+
+const jobClosed = (item) =>
+  Boolean(item.deadline) &&
+  new Date(`${item.deadline}T23:59:59`).getTime() < Date.now();
 
 export default function RecordList({
   collection,
