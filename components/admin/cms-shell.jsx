@@ -157,11 +157,7 @@ export default function CmsShell({ onSignedOut }) {
           <span className="mr-auto truncate text-sm font-bold">{title}</span>
           <ThemeToggle />
           {!isInbox && (
-            <Button
-              onClick={startNew}
-              size="lg"
-              variant="secondary"
-            >
+            <Button onClick={startNew} size="lg" variant="secondary">
               <Plus data-icon="inline-start" /> New {collections[view].singular}
             </Button>
           )}

@@ -70,7 +70,10 @@ export async function POST(request) {
       { error: "Connect MongoDB before changing the CMS password." },
       { status: 503 },
     );
-  const blocked = limited(request, "password", { limit: 5, windowMs: 15 * 60_000 });
+  const blocked = limited(request, "password", {
+    limit: 5,
+    windowMs: 15 * 60_000,
+  });
   if (blocked) return blocked;
   const body = await readJson(request);
   if (!body) return badRequest();

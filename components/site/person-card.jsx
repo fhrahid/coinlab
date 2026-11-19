@@ -11,10 +11,20 @@ export default function PersonCard({ person, photo, large = false }) {
       href={`/people/${person.slug}`}
     >
       <span className="rounded-full bg-linear-to-br from-brand to-brand-2 p-[3px]">
-        <PersonAvatar className={cn("border-4 border-card after:hidden", large ? "size-32 sm:size-36" : "size-24 sm:size-28")} fallbackClassName={large ? "text-3xl" : "text-2xl"} name={person.name} src={photo} />
+        <PersonAvatar
+          className={cn(
+            "border-4 border-card after:hidden",
+            large ? "size-32 sm:size-36" : "size-24 sm:size-28",
+          )}
+          fallbackClassName={large ? "text-3xl" : "text-2xl"}
+          name={person.name}
+          src={photo}
+        />
       </span>
       <span className="flex flex-col gap-1.5">
-        <strong className="text-base leading-snug font-semibold text-balance">{person.name}</strong>
+        <strong className="text-base leading-snug font-semibold text-balance">
+          {person.name}
+        </strong>
         <span className="label-caps text-muted-foreground">{person.role}</span>
       </span>
     </Link>

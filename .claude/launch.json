@@ -4,25 +4,13 @@
     {
       "name": "coinlab-prod",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "exec",
-        "next",
-        "start",
-        "-p",
-        "3111"
-      ],
+      "runtimeArgs": ["exec", "next", "start", "-p", "3111"],
       "port": 3111
     },
     {
       "name": "coinlab-dev",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "exec",
-        "next",
-        "dev",
-        "-p",
-        "3112"
-      ],
+      "runtimeArgs": ["exec", "next", "dev", "-p", "3112"],
       "port": 3112
     },
     {

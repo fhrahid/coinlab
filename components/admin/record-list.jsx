@@ -102,7 +102,12 @@ export default function RecordList({
     () =>
       items.map((item) => {
         const { title, detail } = describe(collection, item);
-        return { item, title, detail, text: `${title} ${detail}`.toLowerCase() };
+        return {
+          item,
+          title,
+          detail,
+          text: `${title} ${detail}`.toLowerCase(),
+        };
       }),
     [items, collection],
   );

@@ -5,7 +5,8 @@ import { useEffect } from "react";
 // marked `data-spotlight` where the cursor is, so CSS can draw the glow.
 export default function PointerGlow() {
   useEffect(() => {
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+      return;
     const onMove = (event) => {
       const target = event.target.closest?.("[data-spotlight]");
       if (!target) return;

@@ -28,7 +28,10 @@ export async function POST(request) {
       { error: "Applications are not available yet." },
       { status: 503 },
     );
-  const blocked = limited(request, "apply", { limit: 5, windowMs: 10 * 60_000 });
+  const blocked = limited(request, "apply", {
+    limit: 5,
+    windowMs: 10 * 60_000,
+  });
   if (blocked) return blocked;
   const body = await readJson(request);
   const { jobSlug, name, email, phone, link, message, website } = body || {};

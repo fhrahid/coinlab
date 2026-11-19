@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 export function Marquee({
   className,
@@ -18,7 +18,7 @@ export function Marquee({
           "flex-row": !vertical,
           "flex-col": vertical,
         },
-        className
+        className,
       )}
     >
       {Array(repeat)
@@ -37,5 +37,5 @@ export function Marquee({
           </div>
         ))}
     </div>
-  )
+  );
 }

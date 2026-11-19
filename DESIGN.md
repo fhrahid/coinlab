@@ -12,16 +12,16 @@ Avoid decoration that says nothing about the lab.
 
 All colours, radius and fonts live in `app/globals.css`. `:root` is the light theme, `.dark` the dark theme.
 
-| Token | Use |
-|---|---|
-| `background`, `foreground` | Page and main text |
-| `card` | Raised surfaces |
-| `muted`, `muted-foreground` | Quiet surfaces and secondary text |
-| `primary` | Main action colour |
-| `brand`, `brand-2` | The logo's blue and cyan; gradients and highlights |
-| `border`, `input`, `ring` | Lines, field borders, focus ring |
-| `navy`, `navy-foreground` | Always-dark surface (CMS login) |
-| `success`, `destructive` | Status |
+| Token                       | Use                                                |
+| --------------------------- | -------------------------------------------------- |
+| `background`, `foreground`  | Page and main text                                 |
+| `card`                      | Raised surfaces                                    |
+| `muted`, `muted-foreground` | Quiet surfaces and secondary text                  |
+| `primary`                   | Main action colour                                 |
+| `brand`, `brand-2`          | The logo's blue and cyan; gradients and highlights |
+| `border`, `input`, `ring`   | Lines, field borders, focus ring                   |
+| `navy`, `navy-foreground`   | Always-dark surface (CMS login)                    |
+| `success`, `destructive`    | Status                                             |
 
 To rebrand, change `--brand`, `--brand-2` and `--primary` in both blocks. Check contrast in both themes after any change.
 
@@ -31,18 +31,18 @@ Fonts: Geist Sans for text, Geist Mono for labels and numbers. Radius base is `0
 
 Compose pages from these. Do not restyle them per page.
 
-| Block | File | Use |
-|---|---|---|
-| `Chip` | `components/site/typography.jsx` | Small mono label above a heading |
-| `SectionHeader` | same | Chip + headline + lead; opens every section |
-| `Highlight` | same | Gradient word in a headline |
-| `Scribble` | same | Pen-stroke underline that draws itself |
-| `ArrowBadge` | same | Arrow in a circle, ends a pill button |
-| `PageHero` | `components/site/page-hero.jsx` | Top of every inner page |
-| `Crumbs` | `components/site/crumbs.jsx` | Breadcrumbs on detail pages |
-| `WingCard`, `PersonCard`, `JobCard` | `components/site/` | Content cards |
-| `PublicationList` | `components/site/publication-list.jsx` | Numbered paper list |
-| `Button variant="glow"` | `components/ui/button.jsx` | The one primary action per view |
+| Block                               | File                                   | Use                                         |
+| ----------------------------------- | -------------------------------------- | ------------------------------------------- |
+| `Chip`                              | `components/site/typography.jsx`       | Small mono label above a heading            |
+| `SectionHeader`                     | same                                   | Chip + headline + lead; opens every section |
+| `Highlight`                         | same                                   | Gradient word in a headline                 |
+| `Scribble`                          | same                                   | Pen-stroke underline that draws itself      |
+| `ArrowBadge`                        | same                                   | Arrow in a circle, ends a pill button       |
+| `PageHero`                          | `components/site/page-hero.jsx`        | Top of every inner page                     |
+| `Crumbs`                            | `components/site/crumbs.jsx`           | Breadcrumbs on detail pages                 |
+| `WingCard`, `PersonCard`, `JobCard` | `components/site/`                     | Content cards                               |
+| `PublicationList`                   | `components/site/publication-list.jsx` | Numbered paper list                         |
+| `Button variant="glow"`             | `components/ui/button.jsx`             | The one primary action per view             |
 
 Utilities in `globals.css`: `wrap` (page gutter), `display-heading`, `label-caps`, `text-gradient`, `bezel` (double border), `dot-grid`.
 
@@ -59,17 +59,17 @@ Homepage order: hero with motto and diagram, partners, research wings, recent wo
 
 CSS only. Every animation is disabled under `prefers-reduced-motion`.
 
-| Effect | How |
-|---|---|
-| Scroll reveal | `reveal` class (scroll-driven animation; content is simply visible where unsupported) |
-| Line drawing | `animate-draw` on an SVG path with `pathLength="1"` |
-| Count-up numbers | `count-up` class with `--num` set inline |
-| Theme switch | View Transition, circle expanding from the toggle |
-| Cursor glow | `data-spotlight` attribute on a card |
-| Page loading | `nav-progress` bar along the top edge while a route loads (`components/site/nav-progress.jsx`) |
-| Page entrance | Each route fades in through `app/(site)/template.jsx` |
-| Scrollbar | Slim themed scrollbar, defined once in `globals.css` |
-| Entrance | `animate-fade-up`, staggered with `[animation-delay:…]` |
+| Effect           | How                                                                                            |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
+| Scroll reveal    | `reveal` class (scroll-driven animation; content is simply visible where unsupported)          |
+| Line drawing     | `animate-draw` on an SVG path with `pathLength="1"`                                            |
+| Count-up numbers | `count-up` class with `--num` set inline                                                       |
+| Theme switch     | View Transition, circle expanding from the toggle                                              |
+| Cursor glow      | `data-spotlight` attribute on a card                                                           |
+| Page loading     | `nav-progress` bar along the top edge while a route loads (`components/site/nav-progress.jsx`) |
+| Page entrance    | Each route fades in through `app/(site)/template.jsx`                                          |
+| Scrollbar        | Slim themed scrollbar, defined once in `globals.css`                                           |
+| Entrance         | `animate-fade-up`, staggered with `[animation-delay:…]`                                        |
 
 Animate only `transform`, `opacity` and `stroke-dashoffset`. Keep durations under one second, except ambient loops.
 

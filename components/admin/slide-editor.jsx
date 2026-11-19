@@ -141,7 +141,10 @@ export default function SlideEditor({ form, update, upload }) {
           value={form.number}
         />
       </div>
-      <Field className="rounded-2xl border bg-card p-3.5" orientation="horizontal">
+      <Field
+        className="rounded-2xl border bg-card p-3.5"
+        orientation="horizontal"
+      >
         <FieldContent>
           <FieldLabel
             className="font-sans text-xs font-semibold tracking-normal text-foreground normal-case"

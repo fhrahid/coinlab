@@ -8,21 +8,21 @@ R2 is plain object storage with no egress fees. Moving files there is easy.
 
 The hard part is that this site uses Cloudinary for more than storage. Cloudinary also **transforms images through the URL**, and three features depend on that:
 
-| Feature | Where | Cloudinary does |
-|---|---|---|
-| Slide editor | `lib/media.js#slideDeliveryUrl`, `components/admin/slide-editor.jsx` | Crop to a focus point (`g_auto`, compass gravity), zoom, pan, brightness, contrast, saturation, format and quality |
-| Thumbnails | `lib/media.js#thumbUrl` | Face-aware square crop for avatars, width-limited logos |
-| Format and quality | both | `f_auto,q_auto` (AVIF/WebP for browsers that accept them) |
+| Feature            | Where                                                                | Cloudinary does                                                                                                    |
+| ------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Slide editor       | `lib/media.js#slideDeliveryUrl`, `components/admin/slide-editor.jsx` | Crop to a focus point (`g_auto`, compass gravity), zoom, pan, brightness, contrast, saturation, format and quality |
+| Thumbnails         | `lib/media.js#thumbUrl`                                              | Face-aware square crop for avatars, width-limited logos                                                            |
+| Format and quality | both                                                                 | `f_auto,q_auto` (AVIF/WebP for browsers that accept them)                                                          |
 
 R2 does none of this. So the plan needs a transformation layer, and Decision 1 below picks it.
 
 ## Decision 1: how images get resized and adjusted
 
-| Option | What it is | Slide editor keeps working | Cost and effort |
-|---|---|---|---|
+| Option                                                | What it is                                                                                                     | Slide editor keeps working                                                                                                          | Cost and effort                                                              |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | **A. Cloudflare Image Transformations** (recommended) | Put the R2 bucket behind a custom domain on your Cloudflare zone and request `/cdn-cgi/image/<options>/<path>` | Mostly. Resize, fit, gravity, brightness, contrast, gamma and format are supported. Saturation and face-aware gravity need checking | Lowest effort. Has a free monthly quota of unique transformations, then paid |
-| B. Resize in the browser before upload | Editor crops and adjusts on a canvas; R2 stores finished files in two or three sizes | Yes, but edits become permanent files, not live URL parameters | No per-request cost. Most code: canvas editor, multi-size upload |
-| C. Keep Cloudinary for images, use R2 only for PDFs | Hybrid | Yes, unchanged | Smallest change, smallest saving |
+| B. Resize in the browser before upload                | Editor crops and adjusts on a canvas; R2 stores finished files in two or three sizes                           | Yes, but edits become permanent files, not live URL parameters                                                                      | No per-request cost. Most code: canvas editor, multi-size upload             |
+| C. Keep Cloudinary for images, use R2 only for PDFs   | Hybrid                                                                                                         | Yes, unchanged                                                                                                                      | Smallest change, smallest saving                                             |
 
 Recommendation: **A**, with **C** as the fallback if a transformation the slide editor needs is missing.
 
@@ -52,17 +52,17 @@ Visitors ─────GET media.coinlabai.com/cdn-cgi/image/<options>/<key>─
 
 ## Code changes
 
-| File | Change |
-|---|---|
-| `lib/storage.js` (new) | `createUploadUrl({ key, contentType })`, `deleteObject(key)`, `publicUrl(key)`. Sign with `aws4fetch` (about 2 kB, no AWS SDK) |
-| `lib/cloudinary.js` | Delete after cutover |
-| `app/api/uploads/route.js` | Return `{ uploadUrl, key }` instead of a Cloudinary signature. Keep the content-type allowlist; add a size limit in the signed request |
-| `components/admin/use-upload.js` | `PUT` the file to `uploadUrl` with its `Content-Type`; save `key` |
-| `lib/media.js` | Rewrite `slideDeliveryUrl` and `thumbUrl` to emit `/cdn-cgi/image/...` options. Keep the same function signatures so pages do not change |
-| `lib/content.js#mediaUrl` | Resolve a key to `https://media.coinlabai.com/<key>`; keep accepting full `https://` URLs for pasted external logos and for unmigrated Cloudinary files |
-| `app/api/content/route.js` | Replace `destroyAsset(url)` with `deleteObject(key)` |
-| `app/api/settings/route.js`, `settings-dialog.jsx` | Replace the Cloudinary usage card with bucket name and a link to the R2 dashboard |
-| `.env.example`, README, AGENTS.md | New variables below |
+| File                                               | Change                                                                                                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/storage.js` (new)                             | `createUploadUrl({ key, contentType })`, `deleteObject(key)`, `publicUrl(key)`. Sign with `aws4fetch` (about 2 kB, no AWS SDK)                          |
+| `lib/cloudinary.js`                                | Delete after cutover                                                                                                                                    |
+| `app/api/uploads/route.js`                         | Return `{ uploadUrl, key }` instead of a Cloudinary signature. Keep the content-type allowlist; add a size limit in the signed request                  |
+| `components/admin/use-upload.js`                   | `PUT` the file to `uploadUrl` with its `Content-Type`; save `key`                                                                                       |
+| `lib/media.js`                                     | Rewrite `slideDeliveryUrl` and `thumbUrl` to emit `/cdn-cgi/image/...` options. Keep the same function signatures so pages do not change                |
+| `lib/content.js#mediaUrl`                          | Resolve a key to `https://media.coinlabai.com/<key>`; keep accepting full `https://` URLs for pasted external logos and for unmigrated Cloudinary files |
+| `app/api/content/route.js`                         | Replace `destroyAsset(url)` with `deleteObject(key)`                                                                                                    |
+| `app/api/settings/route.js`, `settings-dialog.jsx` | Replace the Cloudinary usage card with bucket name and a link to the R2 dashboard                                                                       |
+| `.env.example`, README, AGENTS.md                  | New variables below                                                                                                                                     |
 
 New environment variables:
 
@@ -78,17 +78,17 @@ The R2 API token should be scoped to this one bucket with object read and write 
 
 ## Parameter mapping (option A)
 
-| Today (Cloudinary) | Cloudflare option | Note |
-|---|---|---|
-| `c_fill,w_,h_` | `fit=cover,width=,height=` | |
-| `c_limit,w_` | `fit=scale-down,width=` | |
-| `g_auto` | `gravity=auto` | verify |
-| `g_north` … `g_south_east` | `gravity=top` … or `gravity=XxY` coordinates | compass names differ |
-| `g_face` | `gravity=face` | verify availability |
-| zoom + `c_crop,x_,y_` | `gravity=XxY` with a tighter `width/height`, or `trim` | needs a small rewrite of the pan maths |
-| `e_brightness`, `e_contrast` | `brightness=`, `contrast=` | Cloudflare uses multipliers (1 = unchanged), Cloudinary uses −100…100 |
-| `e_saturation` | `saturation=` | verify |
-| `q_auto,f_auto` | `quality=85,format=auto` | |
+| Today (Cloudinary)           | Cloudflare option                                      | Note                                                                  |
+| ---------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------- |
+| `c_fill,w_,h_`               | `fit=cover,width=,height=`                             |                                                                       |
+| `c_limit,w_`                 | `fit=scale-down,width=`                                |                                                                       |
+| `g_auto`                     | `gravity=auto`                                         | verify                                                                |
+| `g_north` … `g_south_east`   | `gravity=top` … or `gravity=XxY` coordinates           | compass names differ                                                  |
+| `g_face`                     | `gravity=face`                                         | verify availability                                                   |
+| zoom + `c_crop,x_,y_`        | `gravity=XxY` with a tighter `width/height`, or `trim` | needs a small rewrite of the pan maths                                |
+| `e_brightness`, `e_contrast` | `brightness=`, `contrast=`                             | Cloudflare uses multipliers (1 = unchanged), Cloudinary uses −100…100 |
+| `e_saturation`               | `saturation=`                                          | verify                                                                |
+| `q_auto,f_auto`              | `quality=85,format=auto`                               |                                                                       |
 
 Because the scales differ, stored slide `transform` values need converting once, or the URL builder converts on the fly. Converting in the builder is safer: no data change.
 
@@ -123,13 +123,13 @@ Rollback at any step before 7: point `mediaUrl` back at `legacyUrl`. The old fil
 
 ## Risks
 
-| Risk | Mitigation |
-|---|---|
-| A slide adjustment has no Cloudflare equivalent | Verify first; remove that control or use option B or C |
-| Transformation quota exceeded | Few unique sizes (fixed width list), long cache headers on the media domain |
-| Broken images after migration | Dual-read, `legacyUrl`, dry-run log, no Cloudinary deletion until the end |
-| Upload abuse | Admin-only signing, content-type allowlist, size limit, short URL expiry |
-| PDFs served with the wrong type | Set `Content-Type` and `Content-Disposition` when signing the upload |
+| Risk                                            | Mitigation                                                                  |
+| ----------------------------------------------- | --------------------------------------------------------------------------- |
+| A slide adjustment has no Cloudflare equivalent | Verify first; remove that control or use option B or C                      |
+| Transformation quota exceeded                   | Few unique sizes (fixed width list), long cache headers on the media domain |
+| Broken images after migration                   | Dual-read, `legacyUrl`, dry-run log, no Cloudinary deletion until the end   |
+| Upload abuse                                    | Admin-only signing, content-type allowlist, size limit, short URL expiry    |
+| PDFs served with the wrong type                 | Set `Content-Type` and `Content-Disposition` when signing the upload        |
 
 ## Effort
 

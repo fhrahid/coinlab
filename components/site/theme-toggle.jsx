@@ -12,8 +12,13 @@ export default function ThemeToggle({ className }) {
 
   const toggle = (event) => {
     const next = resolvedTheme === "dark" ? "light" : "dark";
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!document.startViewTransition || reduced) { setTheme(next); return; }
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (!document.startViewTransition || reduced) {
+      setTheme(next);
+      return;
+    }
     // The new theme grows in a circle from the button (see globals.css).
     const box = event.currentTarget.getBoundingClientRect();
     const root = document.documentElement;
@@ -28,9 +33,19 @@ export default function ThemeToggle({ className }) {
   };
 
   return (
-    <Button aria-label="Switch between light and dark theme" className={className} onClick={toggle} size="icon" variant="ghost">
-      <Sun className={`${icon} scale-0 -rotate-90 opacity-0 dark:scale-100 dark:rotate-0 dark:opacity-100`} />
-      <Moon className={`${icon} scale-100 rotate-0 opacity-100 dark:scale-0 dark:rotate-90 dark:opacity-0`} />
+    <Button
+      aria-label="Switch between light and dark theme"
+      className={className}
+      onClick={toggle}
+      size="icon"
+      variant="ghost"
+    >
+      <Sun
+        className={`${icon} scale-0 -rotate-90 opacity-0 dark:scale-100 dark:rotate-0 dark:opacity-100`}
+      />
+      <Moon
+        className={`${icon} scale-100 rotate-0 opacity-100 dark:scale-0 dark:rotate-90 dark:opacity-0`}
+      />
     </Button>
   );
 }

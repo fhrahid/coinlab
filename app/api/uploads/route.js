@@ -24,7 +24,9 @@ export async function POST(request) {
   const { filename, contentType } = body;
   // SVG and HTML can carry scripts; anything else has no use in the CMS.
   if (!ALLOWED_TYPES.includes(String(contentType)))
-    return badRequest("Only JPEG, PNG, WebP, AVIF or GIF images and PDF files can be uploaded.");
+    return badRequest(
+      "Only JPEG, PNG, WebP, AVIF or GIF images and PDF files can be uploaded.",
+    );
   const resourceType = String(contentType || "").startsWith("image/")
     ? "image"
     : "raw";

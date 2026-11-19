@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import PersonAvatar from "@/components/site/person-avatar";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 
 // One person in a compact list (wing pages). `photo` is a resolved URL.
 export default function PersonRow({ person, photo }) {
@@ -16,7 +23,10 @@ export default function PersonRow({ person, photo }) {
           <ItemDescription>{person.role}</ItemDescription>
         </ItemContent>
         <ItemActions>
-          <ArrowUpRight aria-hidden="true" className="size-4 text-brand transition-transform group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5" />
+          <ArrowUpRight
+            aria-hidden="true"
+            className="size-4 text-brand transition-transform group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5"
+          />
         </ItemActions>
       </Link>
     </Item>

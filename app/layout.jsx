@@ -9,7 +9,7 @@ export const metadata = {
     template: "%s | COiN Lab",
   },
   description:
-    "COiN Lab is the Computational Intelligence Lab at Southeast University, Dhaka — research in AI for healthcare, finance, networks and security, agriculture, and language.",
+    "COiN Lab is the Computational Intelligence Lab — research in AI for healthcare, finance, networks and security, agriculture, and language.",
 };
 
 export const viewport = {
@@ -25,9 +25,18 @@ export default function RootLayout({ children }) {
   return (
     // next-themes sets the `dark` class before paint, so the server and
     // client <html> attributes differ by design.
-    <html className={`${GeistSans.variable} ${GeistMono.variable}`} lang="en" suppressHydrationWarning>
+    <html
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      lang="en"
+      suppressHydrationWarning
+    >
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          disableTransitionOnChange
+          enableSystem
+        >
           {children}
         </ThemeProvider>
       </body>

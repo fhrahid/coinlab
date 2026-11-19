@@ -309,7 +309,8 @@ export default function RecordForm({
                 })}
                 {field("tier", {
                   label: "Tier heading",
-                  placeholder: "e.g. Leadership — roles sharing a heading are grouped",
+                  placeholder:
+                    "e.g. Leadership — roles sharing a heading are grouped",
                   className: "sm:col-span-2",
                   list: "role-tiers",
                 })}
@@ -382,7 +383,7 @@ export default function RecordForm({
                   label: "How to apply",
                   rows: 3,
                   placeholder:
-                    "e.g. Email your CV and a short cover letter to coinlab@seu.edu.bd with the job title in the subject line.",
+                    "e.g. Email your CV and a short cover letter to info@coinlabai.com with the job title in the subject line.",
                 })}
                 <WingPicker
                   onChange={(value) => update("wingSlugs", value)}

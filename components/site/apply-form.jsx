@@ -56,10 +56,7 @@ export default function ApplyForm({ jobSlug }) {
     );
 
   return (
-    <form
-      className="flex flex-col gap-3.5"
-      onSubmit={submit}
-    >
+    <form className="flex flex-col gap-3.5" onSubmit={submit}>
       <div className="grid gap-3.5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="apply-name">Full name *</Label>
@@ -124,7 +121,12 @@ export default function ApplyForm({ jobSlug }) {
         value={form.website}
       />
       {error && <p className="text-xs text-destructive">{error}</p>}
-      <Button disabled={status === "sending"} size="xl" type="submit" variant="glow">
+      <Button
+        disabled={status === "sending"}
+        size="xl"
+        type="submit"
+        variant="glow"
+      >
         {status === "sending" ? (
           "Sending…"
         ) : (

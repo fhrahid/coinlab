@@ -137,7 +137,10 @@ export async function POST(request) {
     record.type = paperTypes[0];
   if (collection === "jobs" && !jobTypes.includes(record.type))
     record.type = jobTypes[0];
-  if ("deadline" in record && !/^\d{4}-\d{2}-\d{2}$/.test(record.deadline || ""))
+  if (
+    "deadline" in record &&
+    !/^\d{4}-\d{2}-\d{2}$/.test(record.deadline || "")
+  )
     record.deadline = "";
   if (collection === "jobs")
     record.postedAt =

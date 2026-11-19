@@ -19,7 +19,9 @@ export default async function SiteLayout({ children }) {
       <NavProgress />
       <PointerGlow />
       <SiteHeader wings={wings} />
-      <main className="min-w-0 flex-1" id="main">{children}</main>
+      <main className="min-w-0 flex-1" id="main">
+        {children}
+      </main>
       <SiteFooter wings={wings} />
     </div>
   );

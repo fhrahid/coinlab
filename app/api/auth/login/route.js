@@ -6,7 +6,10 @@ export async function POST(request) {
   if (!sameOrigin(request))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   // Slows password guessing: ten attempts per address every 15 minutes.
-  const blocked = limited(request, "login", { limit: 10, windowMs: 15 * 60_000 });
+  const blocked = limited(request, "login", {
+    limit: 10,
+    windowMs: 15 * 60_000,
+  });
   if (blocked) return blocked;
   const body = await readJson(request);
   if (!(await verifyPassword(body?.password)))

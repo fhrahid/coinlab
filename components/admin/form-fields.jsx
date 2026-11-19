@@ -229,7 +229,10 @@ export function BioEditor({
           <span className="label-caps mb-2 block text-[0.5625rem] text-muted-foreground">
             Bio preview
           </span>
-          <RichText className="text-[13px] text-muted-foreground" text={value} />
+          <RichText
+            className="text-[13px] text-muted-foreground"
+            text={value}
+          />
         </div>
       )}
     </Field>

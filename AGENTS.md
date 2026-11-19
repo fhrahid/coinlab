@@ -5,22 +5,22 @@ Read this before changing code. Design rules are in [DESIGN.md](DESIGN.md).
 
 ## What this is
 
-The website and CMS of **COiN Lab** (Computational Intelligence Lab, Southeast University, Dhaka).
+The website and CMS of **COiN Lab** (Computational Intelligence Lab).
 Public pages show research wings, people, publications and jobs. `/admin` is a password-protected CMS that edits all of it.
 
-Motto, used verbatim in the hero: *"COiN Lab brings computational intelligence into contact with real questions—health, finance, security, language, agriculture, and the people living through them."*
+Motto, used verbatim in the hero: _"COiN Lab brings computational intelligence into contact with real questions—health, finance, security, language, agriculture, and the people living through them."_
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 15 App Router, React 19, **JavaScript** (no TypeScript) |
-| Styling | Tailwind CSS v4, tokens in `app/globals.css` |
-| Components | shadcn/ui, Radix base, `radix-maia` style, lucide icons |
-| Theme | `next-themes`, class strategy, light and dark |
-| Data | MongoDB (official driver), seed fallback when no database |
-| Media | Cloudinary, signed direct uploads |
-| Package manager | **pnpm** |
+| Layer           | Choice                                                          |
+| --------------- | --------------------------------------------------------------- |
+| Framework       | Next.js 15 App Router, React 19, **JavaScript** (no TypeScript) |
+| Styling         | Tailwind CSS v4, tokens in `app/globals.css`                    |
+| Components      | shadcn/ui, Radix base, `radix-maia` style, lucide icons         |
+| Theme           | `next-themes`, class strategy, light and dark                   |
+| Data            | MongoDB (official driver), seed fallback when no database       |
+| Media           | Cloudinary, signed direct uploads                               |
+| Package manager | **pnpm**                                                        |
 
 ## Commands
 
@@ -61,29 +61,29 @@ lib/                    data access and pure helpers (see below)
 
 All content is read through the query functions in `lib/content.js`. Records are keyed by a unique `slug`.
 
-| Function | Use it for |
-|---|---|
-| `getRecord(name, slug)` | One record (detail pages). Never load a list to find one item |
-| `getList(name, "field,field")` | A list with only the fields the page shows |
-| `getByWing(name, wingSlug, fields)` | People or papers of one wing, filtered in the database |
-| `getPublications(wing, limit)` | Papers shaped for display; the limit is applied in the database |
-| `getWingCounts()`, `getCount(name)` | Totals, counted in the database |
-| `getCollection(name)` | Every field of every record: the CMS, and small collections (`roles`, `slides`) |
+| Function                            | Use it for                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------- |
+| `getRecord(name, slug)`             | One record (detail pages). Never load a list to find one item                   |
+| `getList(name, "field,field")`      | A list with only the fields the page shows                                      |
+| `getByWing(name, wingSlug, fields)` | People or papers of one wing, filtered in the database                          |
+| `getPublications(wing, limit)`      | Papers shaped for display; the limit is applied in the database                 |
+| `getWingCounts()`, `getCount(name)` | Totals, counted in the database                                                 |
+| `getCollection(name)`               | Every field of every record: the CMS, and small collections (`roles`, `slides`) |
 
 Take the narrowest one that works. They accept plain strings and numbers (not option objects) so React `cache()` can share a repeated call within one render.
 
-| Collection | Purpose | Notes |
-|---|---|---|
-| `wings` | Research areas | `focusPoints` is a list |
-| `people` | Lab members | `role` holds a role **name**; `type` is the role's tier, set by the API. People have no order of their own |
-| `roles` | Role list and hierarchy | `serial` is the only ordering: it places the role, and everyone holding it, in the hierarchy. `tier` groups roles under one heading |
-| `papers` | Publications | `type`, `featured`, `codeUrl`, `doi`, `pdfKey`, `wingSlugs` |
-| `partners` | Partner institutions | |
-| `slides` | Homepage photo panel | Cloudinary URL plus transform settings |
-| `jobs` | Job postings | `deadline` is `YYYY-MM-DD`; `active` switch |
-| `applications` | Job applications | Private, admin only |
-| `messages` | Contact-form inbox | Private, admin only |
-| `settings` | CMS password hash | |
+| Collection     | Purpose                 | Notes                                                                                                                               |
+| -------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `wings`        | Research areas          | `focusPoints` is a list                                                                                                             |
+| `people`       | Lab members             | `role` holds a role **name**; `type` is the role's tier, set by the API. People have no order of their own                          |
+| `roles`        | Role list and hierarchy | `serial` is the only ordering: it places the role, and everyone holding it, in the hierarchy. `tier` groups roles under one heading |
+| `papers`       | Publications            | `type`, `featured`, `codeUrl`, `doi`, `pdfKey`, `wingSlugs`                                                                         |
+| `partners`     | Partner institutions    |                                                                                                                                     |
+| `slides`       | Homepage photo panel    | Cloudinary URL plus transform settings                                                                                              |
+| `jobs`         | Job postings            | `deadline` is `YYYY-MM-DD`; `active` switch                                                                                         |
+| `applications` | Job applications        | Private, admin only                                                                                                                 |
+| `messages`     | Contact-form inbox      | Private, admin only                                                                                                                 |
+| `settings`     | CMS password hash       |                                                                                                                                     |
 
 Adding a field to a collection touches four places, in this order:
 

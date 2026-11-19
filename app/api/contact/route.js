@@ -9,11 +9,14 @@ export async function POST(request) {
     return NextResponse.json(
       {
         error:
-          "Messaging is not available yet. Please email coinlab@seu.edu.bd instead.",
+          "Messaging is not available yet. Please email info@coinlabai.com instead.",
       },
       { status: 503 },
     );
-  const blocked = limited(request, "contact", { limit: 5, windowMs: 10 * 60_000 });
+  const blocked = limited(request, "contact", {
+    limit: 5,
+    windowMs: 10 * 60_000,
+  });
   if (blocked) return blocked;
   const body = await readJson(request);
   if (!body) return badRequest();
@@ -42,7 +45,7 @@ export async function POST(request) {
     return NextResponse.json(
       {
         error:
-          "Could not send right now. Please email coinlab@seu.edu.bd instead.",
+          "Could not send right now. Please email info@coinlabai.com instead.",
       },
       { status: 503 },
     );
